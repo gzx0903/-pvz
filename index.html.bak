@@ -1,0 +1,209 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>植物大战僵尸 - 网页版</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 顶部UI栏 -->
+  <div id="top-bar">
+    <div id="sun-counter">
+      <span id="sun-icon"><svg viewBox="0 0 60 60" width="32" height="32">
+        <g fill="#FFCA28">
+          <rect x="28" y="2" width="4" height="10" rx="2"/>
+          <rect x="28" y="48" width="4" height="10" rx="2"/>
+          <rect x="2" y="28" width="10" height="4" rx="2"/>
+          <rect x="48" y="28" width="10" height="4" rx="2"/>
+          <rect x="10" y="10" width="3" height="8" rx="1.5" transform="rotate(45 11.5 14)"/>
+          <rect x="47" y="10" width="3" height="8" rx="1.5" transform="rotate(-45 48.5 14)"/>
+          <rect x="10" y="42" width="3" height="8" rx="1.5" transform="rotate(-45 11.5 46)"/>
+          <rect x="47" y="42" width="3" height="8" rx="1.5" transform="rotate(45 48.5 46)"/>
+        </g>
+        <circle cx="30" cy="30" r="16" fill="#FFD54F"/>
+        <circle cx="30" cy="30" r="13" fill="#FFEB3B"/>
+        <circle cx="24" cy="26" r="3" fill="#FFF59D" opacity="0.6"/>
+      </svg></span>
+      <span id="sun-value">100</span>
+    </div>
+    <div id="plant-cards">
+      <div class="plant-card" data-plant="sunflower" data-cost="50">
+        <div class="card-icon"><img src="images/plants/sunflower.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">50</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="peashooter" data-cost="100">
+        <div class="card-icon"><img src="images/plants/peashooter.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">100</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="wallnut" data-cost="50">
+        <div class="card-icon"><img src="images/plants/wallnut.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">50</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="potatomine" data-cost="25">
+        <div class="card-icon"><img src="images/plants/potatomine.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">25</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="snowpea" data-cost="175">
+        <div class="card-icon"><img src="images/plants/snowpea.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">175</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="cherrybomb" data-cost="150">
+        <div class="card-icon"><img src="images/plants/cherrybomb.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">150</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="jalapeno" data-cost="125">
+        <div class="card-icon"><img src="images/plants/jalapeno.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">125</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="chomper" data-cost="150">
+        <div class="card-icon"><img src="images/plants/chomper.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">150</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="repeater" data-cost="200">
+        <div class="card-icon"><img src="images/plants/DoublePea.png" width="36" height="36" style="object-fit:contain;"/></div>
+        <div class="card-cost">200</div>
+        <div class="cooldown-timer"></div>
+      </div>
+    </div>
+    <button id="shovel-btn" title="铲子"><svg viewBox="0 0 60 60" width="30" height="30">
+      <rect x="28" y="35" width="4" height="22" rx="1" fill="#8B4513"/>
+      <rect x="26" y="37" width="8" height="4" fill="#A0522D"/>
+      <path d="M20 10 L40 10 L38 35 L22 35 Z" fill="#607D8B"/>
+      <path d="M22 12 L38 12 L37 18 L23 18 Z" fill="#78909C"/>
+      <path d="M23 18 L37 18 L36 24 L24 24 Z" fill="#607D8B"/>
+      <path d="M24 24 L36 24 L35 30 L25 30 Z" fill="#78909C"/>
+      <path d="M25 30 L35 30 L34 35 L26 35 Z" fill="#607D8B"/>
+    </svg></button>
+  </div>
+
+  <!-- 游戏区域 -->
+  <div id="game-area">
+    <!-- 草坪网格 5行×9列 -->
+    <div id="lawn">
+      <!-- 小推车（在草坪左侧独立轨道，绝对定位） -->
+      <img class="lawn-mower" data-row="0" src="images/ui/lawnmower.png" style="width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="1" src="images/ui/lawnmower.png" style="width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="2" src="images/ui/lawnmower.png" style="width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="3" src="images/ui/lawnmower.png" style="width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="4" src="images/ui/lawnmower.png" style="width: 60px; height: auto;" />
+
+      <!-- 第0行 -->
+      <div class="row" data-row="0">
+        <div class="cell" data-row="0" data-col="0"></div>
+        <div class="cell" data-row="0" data-col="1"></div>
+        <div class="cell" data-row="0" data-col="2"></div>
+        <div class="cell" data-row="0" data-col="3"></div>
+        <div class="cell" data-row="0" data-col="4"></div>
+        <div class="cell" data-row="0" data-col="5"></div>
+        <div class="cell" data-row="0" data-col="6"></div>
+        <div class="cell" data-row="0" data-col="7"></div>
+        <div class="cell" data-row="0" data-col="8"></div>
+      </div>
+
+      <!-- 第1行 -->
+      <div class="row" data-row="1">
+        <div class="cell" data-row="1" data-col="0"></div>
+        <div class="cell" data-row="1" data-col="1"></div>
+        <div class="cell" data-row="1" data-col="2"></div>
+        <div class="cell" data-row="1" data-col="3"></div>
+        <div class="cell" data-row="1" data-col="4"></div>
+        <div class="cell" data-row="1" data-col="5"></div>
+        <div class="cell" data-row="1" data-col="6"></div>
+        <div class="cell" data-row="1" data-col="7"></div>
+        <div class="cell" data-row="1" data-col="8"></div>
+      </div>
+
+      <!-- 第2行 -->
+      <div class="row" data-row="2">
+        <div class="cell" data-row="2" data-col="0"></div>
+        <div class="cell" data-row="2" data-col="1"></div>
+        <div class="cell" data-row="2" data-col="2"></div>
+        <div class="cell" data-row="2" data-col="3"></div>
+        <div class="cell" data-row="2" data-col="4"></div>
+        <div class="cell" data-row="2" data-col="5"></div>
+        <div class="cell" data-row="2" data-col="6"></div>
+        <div class="cell" data-row="2" data-col="7"></div>
+        <div class="cell" data-row="2" data-col="8"></div>
+      </div>
+
+      <!-- 第3行 -->
+      <div class="row" data-row="3">
+        <div class="cell" data-row="3" data-col="0"></div>
+        <div class="cell" data-row="3" data-col="1"></div>
+        <div class="cell" data-row="3" data-col="2"></div>
+        <div class="cell" data-row="3" data-col="3"></div>
+        <div class="cell" data-row="3" data-col="4"></div>
+        <div class="cell" data-row="3" data-col="5"></div>
+        <div class="cell" data-row="3" data-col="6"></div>
+        <div class="cell" data-row="3" data-col="7"></div>
+        <div class="cell" data-row="3" data-col="8"></div>
+      </div>
+
+      <!-- 第4行 -->
+      <div class="row" data-row="4">
+        <div class="cell" data-row="4" data-col="0"></div>
+        <div class="cell" data-row="4" data-col="1"></div>
+        <div class="cell" data-row="4" data-col="2"></div>
+        <div class="cell" data-row="4" data-col="3"></div>
+        <div class="cell" data-row="4" data-col="4"></div>
+        <div class="cell" data-row="4" data-col="5"></div>
+        <div class="cell" data-row="4" data-col="6"></div>
+        <div class="cell" data-row="4" data-col="7"></div>
+        <div class="cell" data-row="4" data-col="8"></div>
+      </div>
+    </div>
+
+    <!-- 房子（左侧） -->
+    <div id="house"><svg viewBox="0 0 60 60" width="60" height="60">
+      <!-- 屋顶 -->
+      <polygon points="30,5 55,30 5,30" fill="#8B0000"/>
+      <polygon points="30,8 52,30 8,30" fill="#A52A2A"/>
+      <!-- 墙壁 -->
+      <rect x="10" y="30" width="40" height="28" fill="#DEB887"/>
+      <rect x="12" y="32" width="36" height="24" fill="#F5DEB3"/>
+      <!-- 门 -->
+      <rect x="24" y="42" width="12" height="16" fill="#8B4513"/>
+      <circle cx="33" cy="51" r="1.5" fill="#FFD700"/>
+      <!-- 窗户 -->
+      <rect x="15" y="36" width="8" height="8" fill="#87CEEB"/>
+      <rect x="37" y="36" width="8" height="8" fill="#87CEEB"/>
+      <line x1="19" y1="36" x2="19" y2="44" stroke="#8B4513" stroke-width="1"/>
+      <line x1="15" y1="40" x2="23" y2="40" stroke="#8B4513" stroke-width="1"/>
+      <line x1="41" y1="36" x2="41" y2="44" stroke="#8B4513" stroke-width="1"/>
+      <line x1="37" y1="40" x2="45" y2="40" stroke="#8B4513" stroke-width="1"/>
+      <!-- 烟囱 -->
+      <rect x="40" y="12" width="8" height="18" fill="#8B4513"/>
+      <rect x="38" y="10" width="12" height="4" fill="#A52A2A"/>
+    </svg></div>
+  </div>
+
+  <!-- 阳光掉落容器 -->
+  <div id="falling-suns"></div>
+
+  <!-- 僵尸容器 -->
+  <div id="zombies"></div>
+
+  <!-- 图鉴界面 -->
+  <div id="almanac-overlay" style="display:none">
+    <div id="almanac-panel">
+      <div id="almanac-tabs">
+        <button class="almanac-tab active" data-tab="plants">🌻 植物图鉴</button>
+        <button class="almanac-tab" data-tab="zombies">🧟 僵尸图鉴</button>
+      </div>
+      <div id="almanac-content"></div>
+      <button id="almanac-close">✕</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

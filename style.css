@@ -1,0 +1,914 @@
+/* ========== 全局重置 ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  user-select: none;
+}
+
+/* ========== 顶部UI栏 - 仿原版种子袋横条 ========== */
+#top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
+  background: linear-gradient(to bottom, #4a3520 0%, #6b4c30 40%, #5a3d22 100%);
+  border-bottom: 3px solid #3a2510;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+/* 阳光计数器 - 仿原版圆形阳光计数器 */
+#sun-counter {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #3a2510, #5a3d22);
+  border-radius: 20px;
+  padding: 6px 14px;
+  margin-right: 12px;
+  border: 2px solid #8B6914;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2), inset 0 2px 4px rgba(0,0,0,0.4);
+  min-width: 90px;
+}
+
+#sun-icon {
+  margin-right: 6px;
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
+}
+
+#sun-icon svg {
+  animation: sun-spin 20s linear infinite;
+}
+
+@keyframes sun-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+#sun-value {
+  color: #ffd700;
+  font-size: 22px;
+  font-weight: bold;
+  min-width: 45px;
+  text-align: center;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.8), 0 2px 3px rgba(0,0,0,0.6);
+}
+
+/* 植物卡片栏 - 仿原版紧凑卡片 */
+#plant-cards {
+  display: flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 3px;
+}
+
+.plant-card {
+  width: 55px;
+  height: 70px;
+  background: linear-gradient(to bottom, #5d8a3c, #3a5f22);
+  border: 2px solid #8B6914;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 3px;
+  transition: all 0.12s ease;
+  position: relative;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.08);
+}
+
+.plant-card:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.5), 0 0 10px rgba(255,215,0,0.15);
+}
+
+.plant-card.selected {
+  border-color: #00ff00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.7), 0 0 25px rgba(0, 255, 0, 0.3);
+  animation: card-selected 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes card-selected {
+  from { box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); }
+  to { box-shadow: 0 0 20px rgba(0, 255, 0, 1), 0 0 30px rgba(0, 255, 0, 0.4); }
+}
+
+.plant-card.disabled {
+  background: linear-gradient(to bottom, #555, #333);
+  border-color: #777;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.plant-card.disabled:hover {
+  transform: none;
+}
+
+.card-icon {
+  margin-bottom: 1px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}
+
+.card-icon svg {
+  display: block;
+}
+
+.card-cost {
+  color: #ffd700;
+  font-size: 11px;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.9), 0 1px 1px rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.5);
+  padding: 0 5px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+
+/* 冷却计时器 */
+.cooldown-timer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.plant-card.cooldown .cooldown-timer {
+  opacity: 1;
+}
+
+/* 窝瓜火焰动画 */
+@keyframes jalapeno-fire {
+  0% {
+    opacity: 1;
+    background: linear-gradient(90deg, 
+      rgba(255,200,0,0.9) 0%, 
+      rgba(255,100,0,0.9) 50%, 
+      rgba(255,200,0,0.9) 100%);
+  }
+  50% {
+    opacity: 1;
+    background: linear-gradient(90deg, 
+      rgba(255,100,0,0.9) 0%, 
+      rgba(255,50,0,1) 50%, 
+      rgba(255,100,0,0.9) 100%);
+  }
+  100% {
+    opacity: 0;
+    background: linear-gradient(90deg, 
+      rgba(255,50,0,0.5) 0%, 
+      rgba(200,0,0,0.5) 50%, 
+      rgba(255,50,0,0.5) 100%);
+  }
+}
+
+/* 铲子按钮 */
+#shovel-btn {
+  margin-left: 12px;
+  width: 55px;
+  height: 55px;
+  background: linear-gradient(to bottom, #6b4423, #4a3728);
+  border: 2px solid #cd853f;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#shovel-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.4), 0 0 10px rgba(205, 133, 63, 0.2);
+}
+
+#shovel-btn.selected {
+  border-color: #00ff00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.7), 0 0 25px rgba(0, 255, 0, 0.3);
+  animation: shovel-glow 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes shovel-glow {
+  from { box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); }
+  to { box-shadow: 0 0 20px rgba(0, 255, 0, 1), 0 0 30px rgba(0, 255, 0, 0.4); }
+}
+
+/* ========== 游戏区域 - 仿原版场景 ========== */
+#game-area {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 75px);
+  margin-top: 75px;
+  /* 仿原版草坪背景：天空+草地 */
+  background: linear-gradient(to bottom, 
+    #87ceeb 0%, 
+    #a8d8ea 25%, 
+    #7cba3c 25%, 
+    #5a9e2a 40%,
+    #4a8c1a 60%,
+    #3d7a12 80%,
+    #2d6a0a 100%);
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* 草坪底部泥土路 */
+#game-area::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(to bottom, #8B7355, #6B5340);
+  border-top: 2px solid #5a432e;
+  z-index: 2;
+}
+
+/* 房子（左侧）- 仿原版房屋 */
+#house {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  background: linear-gradient(to right, #6b4423 0%, #7d5533 60%, transparent 100%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#house svg {
+  width: 50px;
+  height: 50px;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* ========== 草坪 - 仿原版深浅交替行 ========== */
+#lawn {
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 8px;
+  border-radius: 8px;
+  z-index: 500;
+}
+
+.row {
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+
+/* 草坪格子 - 仿原版深浅交替 */
+.cell {
+  width: 70px;
+  height: 70px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+/* 深浅交替 - 偶数行深色 */
+.row[data-row="0"] .cell,
+.row[data-row="2"] .cell,
+.row[data-row="4"] .cell {
+  background: #5da832;
+}
+
+/* 奇数行浅色 */
+.row[data-row="1"] .cell,
+.row[data-row="3"] .cell {
+  background: #6cc03e;
+}
+
+/* 深浅交替 - 列也交替 */
+.row[data-row="0"] .cell:nth-child(odd),
+.row[data-row="2"] .cell:nth-child(odd),
+.row[data-row="4"] .cell:nth-child(odd) {
+  background: #53a028;
+}
+
+.row[data-row="1"] .cell:nth-child(even),
+.row[data-row="3"] .cell:nth-child(even) {
+  background: #62b534;
+}
+
+.cell:hover {
+  filter: brightness(1.1);
+}
+
+.cell.occupied {
+  cursor: default;
+}
+
+.cell.occupied:hover {
+  filter: none;
+}
+
+/* 格子内微纹理 */
+.cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 8px 8px;
+  pointer-events: none;
+}
+
+/* ========== 小推车 - 仿原版 ========== */
+.lawn-mower {
+  position: absolute;
+  left: -67px; /* 往左移动约1格（3px - 70px = -67px），碰撞体积不变 */
+  z-index: 100;
+  transition: left 0.1s linear;
+}
+
+/* ========== 阳光掉落 ========== */
+#falling-suns {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  pointer-events: none;
+}
+
+.falling-sun {
+  position: absolute;
+  pointer-events: all;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #ffeb3b 30%, #ffc107 70%, #ff9800 100%);
+  border-radius: 50%;
+  cursor: pointer;
+  animation: sun-float 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.6), 0 0 30px rgba(255, 152, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sun {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #ffeb3b 30%, #ffc107 70%, #ff9800 100%);
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: all;
+  animation: sun-float 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.6), 0 0 30px rgba(255, 152, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes sun-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes explode {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes waveAnnounce {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+
+.sun-collected {
+  animation: sun-collect 0.5s ease-in-out forwards;
+}
+
+@keyframes sun-collect {
+  to { transform: translate(-50vw, -50vh) scale(0); opacity: 0; }
+}
+
+/* ========== 植物和僵尸 ========== */
+.plant {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.plant svg {
+  width: 50px;
+  height: 50px;
+}
+
+.zombie {
+  position: absolute;
+  width: 45px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  transition: left 0.1s linear;
+}
+
+.zombie svg {
+  width: 40px;
+  height: 65px;
+}
+
+/* 坚果墙动画由 PlantAnimator 管理 */
+
+/* ========== 子弹 ========== */
+.pea {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, #66ff33 20%, #33cc00 60%, #228b22 100%);
+  border-radius: 50%;
+  z-index: 40;
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.5);
+}
+
+/* ========== 响应式调整 ========== */
+/* 通过 viewport meta width=900 实现手机端自动缩放 */
+/* 所有元素比例保持一致，无需单独缩小格子 */
+
+/* ========== 图鉴界面 ========== */
+#almanac-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#almanac-panel {
+  background: linear-gradient(to bottom, #5d4037, #3e2723);
+  border: 4px solid #8d6e63;
+  border-radius: 16px;
+  width: 900px;
+  max-width: 95%;
+  max-height: 90vh;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#almanac-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+.almanac-tab {
+  padding: 10px 24px;
+  background: linear-gradient(to bottom, #6d4c41, #4e342e);
+  border: 2px solid #8d6e63;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.almanac-tab:hover {
+  background: linear-gradient(to bottom, #8d6e63, #6d4c41);
+  transform: translateY(-2px);
+}
+
+.almanac-tab.active {
+  background: linear-gradient(to bottom, #ff9800, #f57c00);
+  border-color: #ffb74d;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+}
+
+#almanac-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.almanac-card {
+  background: linear-gradient(to bottom, #4a3728, #3e2723);
+  border: 2px solid #8d6e63;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.almanac-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  border-color: #ff9800;
+}
+
+.almanac-card-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.almanac-card-icon svg {
+  width: 50px;
+  height: 50px;
+}
+
+.almanac-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.almanac-card-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 8px;
+}
+
+.almanac-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.almanac-stat {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #bbb;
+}
+
+.almanac-stat-value {
+  color: #fff;
+  font-weight: bold;
+}
+
+.almanac-card-desc {
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+#almanac-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(to bottom, #d32f2f, #b71c1c);
+  border: 2px solid #ef5350;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+#almanac-close:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(211, 47, 47, 0.6);
+}
+
+/* 滚动条美化 */
+#almanac-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+#almanac-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+#almanac-content::-webkit-scrollbar-thumb {
+  background: #8d6e63;
+  border-radius: 5px;
+}
+
+#almanac-content::-webkit-scrollbar-thumb:hover {
+  background: #a1887f;
+}
+
+
+/* ========== 逐帧动画 CSS ========== */
+.plant img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* 向日葵点头动画（生产时头部摆动） */
+@keyframes sunflowerBob {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  25%  { transform: translate(-50%, -50%) rotate(-15deg); }
+  50%  { transform: translate(-50%, -50%) rotate(10deg); }
+  75%  { transform: translate(-50%, -50%) rotate(-5deg); }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* 豌豆射手张嘴动画（射击时） */
+@keyframes peaOpen {
+  0%   { transform: translate(-50%, -50%) scaleX(1); }
+  30%  { transform: translate(-50%, -50%) scaleX(1.8); }
+  100% { transform: translate(-50%, -50%) scaleX(1); }
+}
+
+/* 植物放置弹跳 */
+@keyframes plantBounce {
+  0%   { transform: translate(-50%, -50%) scale(0); }
+  60%  { transform: translate(-50%, -50%) scale(1.2); }
+  80%  { transform: translate(-50%, -50%) scale(0.9); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.plant {
+  animation: plantBounce 0.3s ease-out;
+}
+
+
+/* ===== 植物CSS动画 ===== */
+/* 动画基类 */
+.plant-animated {
+  transform-origin: center bottom;
+}
+
+/* 豌豆射手待机微微上下弹跳 */
+@keyframes peaIdleBob {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-2px); }
+}
+.pea-idle-bob {
+  animation: peaIdleBob 1.2s ease-in-out infinite;
+}
+
+/* 豌豆射手攻击时左右抖动 */
+@keyframes peaAttackShake {
+  0%, 100% { transform: translate(-50%, -50%) translateX(0px); }
+  20% { transform: translate(-50%, -50%) translateX(-3px) rotate(-2deg); }
+  40% { transform: translate(-50%, -50%) translateX(3px) rotate(2deg); }
+  60% { transform: translate(-50%, -50%) translateX(-2px); }
+  80% { transform: translate(-50%, -50%) translateX(2px); }
+}
+.pea-attack-shake {
+  animation: peaAttackShake 0.4s ease-out;
+}
+
+/* 向日葵待机上下浮动 */
+@keyframes sunIdleBob {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-3px); }
+}
+.sun-idle-bob {
+  animation: sunIdleBob 2s ease-in-out infinite;
+}
+
+/* 向日葵生产阳光时跳动 */
+@keyframes sunProduceBounce {
+  0% { transform: translate(-50%, -50%) translateY(0px); }
+  30% { transform: translate(-50%, -50%) translateY(-8px); }
+  50% { transform: translate(-50%, -50%) translateY(-4px); }
+  70% { transform: translate(-50%, -50%) translateY(-6px); }
+  100% { transform: translate(-50%, -50%) translateY(0px); }
+}
+.sun-produce-bounce {
+  animation: sunProduceBounce 0.6s ease-out;
+}
+
+/* 土豆地雷动画由 PlantAnimator 管理 */
+
+/* 寒冰射手 */
+@keyframes snowpeaIdle {
+  0%, 100% { transform: translateY(0px); filter: hue-rotate(0deg); }
+  50% { transform: translateY(-2px); filter: hue-rotate(5deg); }
+}
+.plant-snowpea .plant-animated,
+.plant-snowpea-idle {
+  animation: snowpeaIdle 1.5s ease-in-out infinite;
+}
+
+/* 坚果墙微微晃动 */
+@keyframes wallnutIdle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(0.5deg); }
+  75% { transform: rotate(-0.5deg); }
+}
+.plant-wallnut-idle {
+  animation: wallnutIdle 3s ease-in-out infinite;
+}
+
+/* 大嘴花微动 */
+@keyframes chomperIdle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+.plant-chomper-idle {
+  animation: chomperIdle 2s ease-in-out infinite;
+}
+
+/* ===== 全植物 CSS 动画 ===== */
+
+/* 坚果墙 idle 微微晃动 */
+@keyframes wallnutIdleBob {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(0.8deg); }
+  75% { transform: translate(-50%, -50%) rotate(-0.8deg); }
+}
+.wallnut-idle-bob {
+  animation: wallnutIdleBob 3s ease-in-out infinite;
+}
+
+/* 坚果墙受击后退 */
+@keyframes wallnutHurtFlinch {
+  0% { transform: translate(-50%, -50%) translateX(0); }
+  30% { transform: translate(-50%, -50%) translateX(-4px); }
+  60% { transform: translate(-50%, -50%) translateX(2px); }
+  100% { transform: translate(-50%, -50%) translateX(0); }
+}
+.wallnut-hurt-flinch {
+  animation: wallnutHurtFlinch 0.3s ease-out;
+}
+
+/* 土豆地雷 idle 摇晃 */
+@keyframes potatoIdleWobble {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+  25% { transform: translate(-50%, -50%) rotate(-2deg) scale(1.02); }
+  75% { transform: translate(-50%, -50%) rotate(2deg) scale(1.02); }
+}
+.potato-idle-wobble {
+  animation: potatoIdleWobble 1.5s ease-in-out infinite;
+}
+
+/* 土豆地雷就绪震动 */
+@keyframes potatoArmShake {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  25% { transform: translate(-50%, -50%) scale(1.1) rotate(-3deg); }
+  50% { transform: translate(-50%, -50%) scale(1.15) rotate(3deg); }
+  75% { transform: translate(-50%, -50%) scale(1.1) rotate(-2deg); }
+}
+.potato-arm-shake {
+  animation: potatoArmShake 0.4s ease-out;
+}
+
+/* 雪花豌豆 idle 浮动 */
+@keyframes snowpeaIdleBob {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-2px); }
+}
+.snowpea-idle-bob {
+  animation: snowpeaIdleBob 1.3s ease-in-out infinite;
+}
+
+/* 雪花豌豆攻击抖动 */
+@keyframes snowpeaAttackShake {
+  0%, 100% { transform: translate(-50%, -50%) translateX(0px); }
+  20% { transform: translate(-50%, -50%) translateX(-3px) rotate(-2deg); }
+  40% { transform: translate(-50%, -50%) translateX(3px) rotate(2deg); }
+  60% { transform: translate(-50%, -50%) translateX(-2px); }
+  80% { transform: translate(-50%, -50%) translateX(2px); }
+}
+.snowpea-attack-shake {
+  animation: snowpeaAttackShake 0.45s ease-out;
+}
+
+/* 樱桃炸弹 idle 脉动 */
+@keyframes cherryIdlePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.06); }
+}
+.cherry-idle-pulse {
+  animation: cherryIdlePulse 0.8s ease-in-out infinite;
+}
+
+/* 樱桃炸弹爆炸膨胀 */
+@keyframes cherryExplode {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  40% { transform: translate(-50%, -50%) scale(1.5) rotate(15deg); }
+  70% { transform: translate(-50%, -50%) scale(2) rotate(-10deg); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(2.5) rotate(5deg); opacity: 0; }
+}
+.cherry-explode {
+  animation: cherryExplode 0.8s ease-out forwards;
+}
+
+/* 火爆辣椒 idle 发光 */
+@keyframes jalapenoIdleGlow {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  50% { transform: translate(-50%, -50%) scale(1.04); filter: brightness(1.15); }
+}
+.jalapeno-idle-glow {
+  animation: jalapenoIdleGlow 1s ease-in-out infinite;
+}
+
+/* 火爆辣椒攻击燃烧 */
+@keyframes jalapenoAttackBurn {
+  0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  30% { transform: translate(-50%, -50%) scale(1.2) rotate(-10deg); filter: brightness(1.5); }
+  60% { transform: translate(-50%, -50%) scale(1.1) rotate(5deg); filter: brightness(2); }
+  100% { transform: translate(-50%, -50%) scale(0) rotate(20deg); opacity: 0; }
+}
+.jalapeno-attack-burn {
+  animation: jalapenoAttackBurn 1.5s ease-out forwards;
+}
+
+/* 大嘴花 idle 呼吸 */
+@keyframes chomperIdleBreathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  50% { transform: translate(-50%, -50%) scale(1.03) rotate(-1deg); }
+}
+.chomper-idle-breathe {
+  animation: chomperIdleBreathe 2.5s ease-in-out infinite;
+}
+
+/* 大嘴花攻击前扑 */
+@keyframes chomperAttackLunge {
+  0% { transform: translate(-50%, -50%) scale(1) translateX(0); }
+  30% { transform: translate(-50%, -50%) scale(1.15) translateX(10px) rotate(-5deg); }
+  60% { transform: translate(-50%, -50%) scale(1.05) translateX(-3px); }
+  100% { transform: translate(-50%, -50%) scale(1) translateX(0); }
+}
+.chomper-attack-lunge {
+  animation: chomperAttackLunge 0.6s ease-out;
+}
+
+/* 双发射手 idle 弹跳 */
+@keyframes repeaterIdleBob {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
+  50% { transform: translate(-50%, -50%) translateY(-2px); }
+}
+.repeater-idle-bob {
+  animation: repeaterIdleBob 1s ease-in-out infinite;
+}
+
+/* 双发射手攻击双抖 */
+@keyframes repeaterAttackShake {
+  0% { transform: translate(-50%, -50%) translateX(0px); }
+  15% { transform: translate(-50%, -50%) translateX(-4px) rotate(-3deg); }
+  30% { transform: translate(-50%, -50%) translateX(4px) rotate(3deg); }
+  50% { transform: translate(-50%, -50%) translateX(-3px) rotate(-2deg); }
+  70% { transform: translate(-50%, -50%) translateX(3px) rotate(2deg); }
+  85% { transform: translate(-50%, -50%) translateX(-2px); }
+  100% { transform: translate(-50%, -50%) translateX(0px); }
+}
+.repeater-attack-shake {
+  animation: repeaterAttackShake 0.5s ease-out;
+}
+

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=900">
+  <title>植物大战僵尸 - 网页版</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 顶部UI栏 -->
+  <div id="top-bar">
+    <div id="sun-counter">
+      <span id="sun-icon">☀️</span>
+      <span id="sun-value">100</span>
+    </div>
+    <div id="plant-cards">
+      <div class="plant-card" data-plant="sunflower" data-cost="50">
+        <div class="card-icon"><img src="images/plants/sunflower.png" width="36" height="36"></div>
+        <div class="card-cost">50</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="peashooter" data-cost="100">
+        <div class="card-icon"><img src="images/plants/peashooter.png" width="36" height="36"></div>
+        <div class="card-cost">100</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="wallnut" data-cost="50">
+        <div class="card-icon"><img src="images/plants/wallnut.png" width="36" height="36"></div>
+        <div class="card-cost">50</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="potatomine" data-cost="25">
+        <div class="card-icon"><img src="images/plants/potatomine.png" width="36" height="36"></div>
+        <div class="card-cost">25</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="snowpea" data-cost="175">
+        <div class="card-icon"><img src="images/plants/snowpea.png" width="36" height="36"></div>
+        <div class="card-cost">175</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="cherrybomb" data-cost="150">
+        <div class="card-icon"><img src="images/plants/cherrybomb.png" width="36" height="36"></div>
+        <div class="card-cost">150</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="jalapeno" data-cost="125">
+        <div class="card-icon"><img src="images/plants/jalapeno.png" width="36" height="36"></div>
+        <div class="card-cost">125</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="chomper" data-cost="150">
+        <div class="card-icon"><img src="images/plants/chomper.png" width="36" height="36"></div>
+        <div class="card-cost">150</div>
+        <div class="cooldown-timer"></div>
+      </div>
+      <div class="plant-card" data-plant="repeater" data-cost="200">
+        <div class="card-icon"><img src="images/plants/DoublePea.png" width="36" height="36"></div>
+        <div class="card-cost">200</div>
+        <div class="cooldown-timer"></div>
+      </div>
+    </div>
+    <button id="shovel-btn" title="铲子">🪏</button>
+  </div>
+
+  <!-- 游戏区域 -->
+  <div id="game-area">
+    <!-- 草坪网格 5行×9列 -->
+    <div id="lawn">
+      <!-- 小推车（在草坪左侧独立轨道，绝对定位） -->
+      <img class="lawn-mower" data-row="0" src="images/ui/lawnmower.png" style="top: 15px; width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="1" src="images/ui/lawnmower.png" style="top: 87px; width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="2" src="images/ui/lawnmower.png" style="top: 159px; width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="3" src="images/ui/lawnmower.png" style="top: 231px; width: 60px; height: auto;" />
+      <img class="lawn-mower" data-row="4" src="images/ui/lawnmower.png" style="top: 303px; width: 60px; height: auto;" />
+
+      <!-- 第0行 -->
+      <div class="row" data-row="0">
+        <div class="cell" data-row="0" data-col="0"></div>
+        <div class="cell" data-row="0" data-col="1"></div>
+        <div class="cell" data-row="0" data-col="2"></div>
+        <div class="cell" data-row="0" data-col="3"></div>
+        <div class="cell" data-row="0" data-col="4"></div>
+        <div class="cell" data-row="0" data-col="5"></div>
+        <div class="cell" data-row="0" data-col="6"></div>
+        <div class="cell" data-row="0" data-col="7"></div>
+        <div class="cell" data-row="0" data-col="8"></div>
+      </div>
+
+      <!-- 第1行 -->
+      <div class="row" data-row="1">
+        <div class="cell" data-row="1" data-col="0"></div>
+        <div class="cell" data-row="1" data-col="1"></div>
+        <div class="cell" data-row="1" data-col="2"></div>
+        <div class="cell" data-row="1" data-col="3"></div>
+        <div class="cell" data-row="1" data-col="4"></div>
+        <div class="cell" data-row="1" data-col="5"></div>
+        <div class="cell" data-row="1" data-col="6"></div>
+        <div class="cell" data-row="1" data-col="7"></div>
+        <div class="cell" data-row="1" data-col="8"></div>
+      </div>
+
+      <!-- 第2行 -->
+      <div class="row" data-row="2">
+        <div class="cell" data-row="2" data-col="0"></div>
+        <div class="cell" data-row="2" data-col="1"></div>
+        <div class="cell" data-row="2" data-col="2"></div>
+        <div class="cell" data-row="2" data-col="3"></div>
+        <div class="cell" data-row="2" data-col="4"></div>
+        <div class="cell" data-row="2" data-col="5"></div>
+        <div class="cell" data-row="2" data-col="6"></div>
+        <div class="cell" data-row="2" data-col="7"></div>
+        <div class="cell" data-row="2" data-col="8"></div>
+      </div>
+
+      <!-- 第3行 -->
+      <div class="row" data-row="3">
+        <div class="cell" data-row="3" data-col="0"></div>
+        <div class="cell" data-row="3" data-col="1"></div>
+        <div class="cell" data-row="3" data-col="2"></div>
+        <div class="cell" data-row="3" data-col="3"></div>
+        <div class="cell" data-row="3" data-col="4"></div>
+        <div class="cell" data-row="3" data-col="5"></div>
+        <div class="cell" data-row="3" data-col="6"></div>
+        <div class="cell" data-row="3" data-col="7"></div>
+        <div class="cell" data-row="3" data-col="8"></div>
+      </div>
+
+      <!-- 第4行 -->
+      <div class="row" data-row="4">
+        <div class="cell" data-row="4" data-col="0"></div>
+        <div class="cell" data-row="4" data-col="1"></div>
+        <div class="cell" data-row="4" data-col="2"></div>
+        <div class="cell" data-row="4" data-col="3"></div>
+        <div class="cell" data-row="4" data-col="4"></div>
+        <div class="cell" data-row="4" data-col="5"></div>
+        <div class="cell" data-row="4" data-col="6"></div>
+        <div class="cell" data-row="4" data-col="7"></div>
+        <div class="cell" data-row="4" data-col="8"></div>
+      </div>
+    </div>
+
+    <!-- 房子（左侧） -->
+    <div id="house">🏠</div>
+  </div>
+
+  <!-- 阳光掉落容器 -->
+  <div id="falling-suns"></div>
+
+  <!-- 僵尸容器 -->
+  <div id="zombies"></div>
+
+  <!-- 图鉴界面 -->
+  <div id="almanac-overlay" style="display:none">
+    <div id="almanac-panel">
+      <div id="almanac-tabs">
+        <button class="almanac-tab active" data-tab="plants">🌻 植物图鉴</button>
+        <button class="almanac-tab" data-tab="zombies">🧟 僵尸图鉴</button>
+      </div>
+      <div id="almanac-content"></div>
+      <button id="almanac-close">✕</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
