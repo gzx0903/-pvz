@@ -912,3 +912,149 @@ body {
   animation: repeaterAttackShake 0.5s ease-out;
 }
 
+
+/* ===== 登录注册界面 ===== */
+#auth-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #1a3a0a 0%, #2d5016 50%, #1a3a0a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+#auth-box {
+  background: rgba(0,0,0,0.7);
+  padding: 30px 40px;
+  border-radius: 15px;
+  border: 2px solid #4a7c23;
+  min-width: 320px;
+  max-width: 380px;
+  width: 100%;
+}
+#auth-box h1 {
+  text-align: center;
+  color: #7cb342;
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(124,179,66,0.5);
+}
+#auth-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #4a7c23;
+  color: #aaa;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 15px;
+}
+.auth-tab.active {
+  background: #4a7c23;
+  color: #fff;
+}
+#auth-form-login input,
+#auth-form-register input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: #1a2a0a;
+  border: 1px solid #3a5a13;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+#auth-form-login input::placeholder,
+#auth-form-register input::placeholder {
+  color: #888;
+}
+#auth-form-login button,
+#auth-form-register button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: #4a7c23;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+#auth-form-login button:hover,
+#auth-form-register button:hover {
+  background: #5a8c33;
+}
+#auth-error {
+  margin-top: 10px;
+  font-size: 13px;
+  text-align: center;
+  min-height: 18px;
+}
+
+/* ===== 用户栏 ===== */
+#user-bar {
+  position: fixed;
+  top: 5px;
+  right: 10px;
+  z-index: 9999;
+  background: rgba(0,0,0,0.6);
+  padding: 5px 15px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+#user-bar button {
+  background: #4a7c23;
+  border: none;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 3px 10px;
+}
+#user-bar button:hover { background: #5a8c33; }
+#current-score { color: #ffd700; font-weight: bold; }
+
+/* ===== 排行榜 ===== */
+#leaderboard-list table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+#leaderboard-list th {
+  background: #3a6c13;
+  padding: 8px 5px;
+  text-align: center;
+}
+#leaderboard-list td {
+  padding: 6px 5px;
+  text-align: center;
+  border-bottom: 1px solid #3a5a13;
+}
+#leaderboard-list tr:nth-child(even) { background: rgba(255,255,255,0.05); }
+#leaderboard-list tr:nth-child(1) td { color: #ffd700; font-weight: bold; }
+#leaderboard-list tr:nth-child(2) td { color: #c0c0c0; }
+#leaderboard-list tr:nth-child(3) td { color: #cd7f32; }
+#leaderboard-list .my-rank { background: rgba(74,124,35,0.4) !important; }
+
+/* ===== 主菜单 ===== */
+#main-menu > div > h1 {
+  font-size: 42px !important;
+  margin-bottom: 20px !important;
+}
+#btn-menu-logout {
+  background: #8b0000 !important;
+  color: #fff !important;
+}
+#btn-menu-logout:hover { background: #a50000 !important; }

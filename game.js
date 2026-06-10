@@ -864,6 +864,7 @@ function renderPlant(row, col, plantType) {
     lastShootTime: 0
   };
   gameState.plants.push(plantObj);
+  if (typeof onPlantPlaced === 'function') onPlantPlaced();
   
   // 樱桃炸弹特殊处理：种植后立即爆炸
   if (plantType === 'cherrybomb') {
@@ -917,6 +918,7 @@ function removePlant(row, col) {
     if (p.row === row && p.col === col) {
       p.element = null; // 清理引用防止僵尸访问已删除的DOM
       // 清理sprite
+      if (typeof onPlantDestroyed === 'function') onPlantDestroyed();
       return false;
     }
     return true;
@@ -1440,6 +1442,7 @@ function hitZombie(zombie, damage, isSnowpea) {
     if (zombie.element) zombie.element.remove();
     gameState.zombies = gameState.zombies.filter(z => z.id !== zombie.id);
     console.log('僵尸被击杀！');
+    if (typeof onZombieKilled === 'function') onZombieKilled();
   }
 }
 
@@ -2128,6 +2131,7 @@ function gameOver(isWin) {
   if (!gameState.isRunning) return;
   gameState.isRunning = false;
   gameState.gameResult = isWin ? 'win' : 'lose';
+  if (typeof onLevelComplete === 'function') onLevelComplete(isWin);
   
   // 停止定时器
   clearGameTimers();
@@ -2273,6 +2277,7 @@ function updateLawnMowers() {
 
 function startLevel(levelNum) {
   resetGame();
+  if (typeof startGameStats === 'function') startGameStats(levelNum);
   
   gameState.currentLevel = levelNum;
   const levelData = LEVELS[levelNum - 1];
@@ -2503,7 +2508,14 @@ function showMainMenu() {
     if (unlocked) {
       btn.onmouseenter = () => btn.style.transform = 'scale(1.05)';
       btn.onmouseleave = () => btn.style.transform = 'scale(1)';
-      btn.onclick = () => { menu.remove(); showGameUI(); startLevel(i + 1); };
+      const levelNum = i + 1;
+      btn.onclick = () => {
+        if (typeof requireLogin === 'function' && window.FIREBASE_READY) {
+          requireLogin(() => { menu.remove(); showGameUI(); startLevel(levelNum); });
+        } else {
+          menu.remove(); showGameUI(); startLevel(levelNum);
+        }
+      };
     }
     levelGrid.appendChild(btn);
   });
@@ -2521,7 +2533,13 @@ function showMainMenu() {
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     margin-top: 10px;
   `;
-  adventureBtn.onclick = () => { menu.remove(); showGameUI(); startLevel(1); };
+  adventureBtn.onclick = () => {
+    if (typeof requireLogin === 'function' && window.FIREBASE_READY) {
+      requireLogin(() => { menu.remove(); showGameUI(); startLevel(1); });
+    } else {
+      menu.remove(); showGameUI(); startLevel(1);
+    }
+  };
   menu.appendChild(adventureBtn);
   
   // 查看图鉴按钮
@@ -2623,6 +2641,19 @@ function initGame() {
   console.log('游戏初始化完成，事件监听器已绑定');
   
   // 显示主菜单
+  // 如果 Firebase 已配置且用户已登录，显示用户信息
+  if (window.FIREBASE_READY && window.PVZ_USER) {
+    const nameEl = document.getElementById('user-name');
+    if (nameEl && window.PVZ_USER.displayName) nameEl.textContent = '👤 ' + window.PVZ_USER.displayName;
+    const ub = document.getElementById('user-bar');
+    if (ub) ub.style.display = 'flex';
+  }
+  // 如果 Firebase 已配置但用户未登录，显示登录界面
+  if (window.FIREBASE_READY && !window.PVZ_USER) {
+    const authScreen = document.getElementById('auth-screen');
+    if (authScreen) authScreen.style.display = 'flex';
+    // 继续显示主菜单（在登录界面下方，但被遮盖）
+  }
   showMainMenu();
 }
 
