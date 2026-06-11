@@ -52,9 +52,11 @@ async function initCloudBase() {
   try {
     // 尝试访问 API 健康检查
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    console.log('[TCB] 正在检测在线模式:', `${API_BASE_URL}/api/leaderboard?limit=1`);
     const res = await fetch(`${API_BASE_URL}/api/leaderboard?limit=1`, {
-      signal: controller.signal
+      signal: controller.signal,
+      mode: 'cors'
     });
     clearTimeout(timeout);
     if (res.ok) {
