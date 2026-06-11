@@ -2302,6 +2302,20 @@ function showMainMenu() {
   almanacBtn.onclick = () => { menu.remove(); showAlmanac(); };
   menu.appendChild(almanacBtn);
   
+  // 排行榜按钮
+  const leaderboardBtn = document.createElement('button');
+  leaderboardBtn.textContent = '🏆 排行榜';
+  leaderboardBtn.style.cssText = `
+    font-size: 22px; padding: 14px 40px;
+    background: linear-gradient(to bottom, #3a6c13, #2d5016);
+    color: white; border: 3px solid #4a7a2a;
+    border-radius: 12px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    margin-top: 10px;
+  `;
+  leaderboardBtn.onclick = () => { if (typeof showLeaderboard === 'function') showLeaderboard(); };
+  menu.appendChild(leaderboardBtn);
+
   // 一键解锁全部关卡按钮
   const unlockAllBtn = document.createElement('button');
   unlockAllBtn.textContent = '🔓 一键解锁全部关卡';
