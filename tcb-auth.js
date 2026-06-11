@@ -86,10 +86,15 @@ async function tcbAnonymousSignIn() {
         DeviceId: deviceId
       })
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[TCB] 匿名登录 HTTP ${res.status}，可能未在控制台开启匿名登录`);
+      return null;
+    }
     const data = await res.json();
-    // 提取 access token（具体格式看实际返回）
-    return data.access_token || data.AccessToken || data.accessToken || null;
+    // 提取 access token
+    const token = data.access_token || data.AccessToken || data.accessToken || data.data?.access_token || null;
+    if (token) console.log('[TCB] 匿名登录成功');
+    return token;
   } catch (e) {
     console.warn('[TCB] 匿名登录失败:', e);
     return null;
@@ -98,6 +103,12 @@ async function tcbAnonymousSignIn() {
 
 // ========== 用户登录 ==========
 async function doLogin(email, password) {
+  // 如果没有 token，直接走离线模式
+  if (!window.TCB_ACCESS_TOKEN) {
+    console.log('[TCB] 离线模式登录');
+    offlineLogin(email, password);
+    return;
+  }
   try {
     const result = await tcbCall(
       `db.collection('users').where({email:'${email}',password:'${password}'}).get()`
@@ -472,6 +483,7 @@ window.onLevelComplete = onLevelComplete;
 
 // ========== 初始化 ==========
 async function initAuth() {
+  console.log('[TCB] 正在初始化认证系统...');
   // Tab 切换
   document.querySelectorAll('.auth-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -522,28 +534,22 @@ async function initAuth() {
   if (token) {
     window.TCB_ACCESS_TOKEN = token;
     window.TCB_READY = true;
-    console.log('[TCB] CloudBase 连接成功');
+    console.log('[TCB] ✅ CloudBase 连接成功（在线模式）');
     // 尝试自动登录（如果之前登录过）
     const savedEmail = localStorage.getItem('pvz_user_email');
     if (savedEmail) {
-      await doLogin(savedEmail, '___dummy___');
-      // 如果因为密码不对失败（离线模式），静默切换到登录界面
-      if (!window.PVZ_USER) {
-        showAuthScreen();
-      }
+      // 有保存的邮箱但没存密码，只能显示登录界面让用户输入
+      showAuthScreen();
+      // 预填邮箱
+      const emailInput = document.getElementById('login-email');
+      if (emailInput) emailInput.value = savedEmail;
     } else {
       showAuthScreen();
     }
   } else {
-    console.warn('[TCB] CloudBase 连接失败，将以离线模式运行');
+    console.warn('[TCB] ⚠️ CloudBase 未连接，将以离线模式运行（数据保存在浏览器本地）');
     window.TCB_READY = false;
-    // 离线模式：尝试恢复本地登录
-    const savedEmail = localStorage.getItem('pvz_user_email');
-    if (savedEmail) {
-      offlineLogin(savedEmail, '');
-    } else {
-      showAuthScreen();
-    }
+    showAuthScreen();
   }
 }
 
