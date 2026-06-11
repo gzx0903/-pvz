@@ -116,6 +116,7 @@ function offlineLogin(email, password) {
   hideAuthScreen();
   showUserBar();
   updateScoreDisplay(user.score || 0);
+  await showLeaderboard();  // 离线模式也显示排行榜
   if (typeof showMainMenu === 'function') showMainMenu();
 }
 
@@ -234,8 +235,27 @@ function calculateScore(level, timeSpent, plantsUsed, plantsDestroyed, zombiesKi
 
 // ========== 排行榜 ==========
 async function showLeaderboard() {
-  const container = document.getElementById('leaderboard-body');
-  if (!container) return;
+  let container = document.getElementById('leaderboard-body');
+  if (!container) {
+    // 创建排行榜modal
+    container = document.createElement('div');
+    container.id = 'leaderboard-body';
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Arial,sans-serif;';
+    container.innerHTML = `
+      <div style="background:#2d5016;border-radius:12px;padding:20px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+        <h2 style="text-align:center;color:#ffd700;margin-bottom:15px;">🏆 排行榜</h2>
+        <table style="width:100%;border-collapse:collapse;color:#fff;font-size:14px;">
+          <thead style="background:#1a3a08;">
+            <tr><th style="padding:8px;">排名</th><th style="padding:8px;">玩家</th><th style="padding:8px;">分数</th><th style="padding:8px;">关卡</th><th style="padding:8px;">僵尸</th></tr>
+          </thead>
+          <tbody id="leaderboard-tbody"></tbody>
+        </table>
+        <button id="leaderboard-close" style="display:block;margin:15px auto 0;padding:8px 30px;background:#8fc43a;color:#1a3a08;border:none;border-radius:6px;font-size:14px;cursor:pointer;">关闭</button>
+      </div>
+    `;
+    document.body.appendChild(container);
+    document.getElementById('leaderboard-close').onclick = () => container.remove();
+  }
   
   let entries = [];
   
