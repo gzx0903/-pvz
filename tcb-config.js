@@ -6,7 +6,7 @@
 // 3. 复制环境ID填入下方
 // ============================================================
 
-const TCB_ENV_ID = 'YOUR_ENV_ID';   // 替换为你的环境 ID（如 pvz-game-xxx）
+const TCB_ENV_ID = 'pvz-game-d1gwxo09f3b66d06c';   // 腾讯云开发环境 ID
 
 // 初始化
 (function () {
