@@ -6,12 +6,12 @@
 // 5. 在 "Firestore Database" 中创建数据库（测试模式）
 // ============================================================
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyA9pwUroZxUQZw48-aatY-LkRchs2RUZKI",
+  authDomain: "pvz1-050903.firebaseapp.com",
+  projectId: "pvz1-050903",
+  storageBucket: "pvz1-050903.firebasestorage.app",
+  messagingSenderId: "137319733934",
+  appId: "1:137319733934:web:57b8c7e56e53ac9b75eb3f"
 };
 
 // 初始化 Firebase（如果配置未填写则跳过）
