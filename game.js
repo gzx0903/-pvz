@@ -1441,6 +1441,7 @@ function hitZombie(zombie, damage, isSnowpea) {
   if (zombie.hp <= 0) {
     if (zombie.element) zombie.element.remove();
     gameState.zombies = gameState.zombies.filter(z => z.id !== zombie.id);
+    gameState.zombiesKilled++;
     console.log('僵尸被击杀！');
     if (typeof onZombieKilled === 'function') onZombieKilled();
   }
