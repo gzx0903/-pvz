@@ -102,7 +102,7 @@ const ALMANAC_DATA = {
       hp: 100,
       damage: 20,
       cooldown: '7.5秒',
-      desc: '基础政击植物，持续发射豌豆攻击僵尸。',
+      desc: '基础攻击植物，持续发射豌豆攻击僵尸。',
       svg: '<img src="images/plants/peashooter.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -111,8 +111,8 @@ const ALMANAC_DATA = {
       cost: 50,
       hp: 100,
       damage: 0,
-      cooldown: '3秒',
-      desc: '经济核心，定期产生阳光（每10.5秒+25阳光）。',
+      cooldown: '5秒',
+      desc: '经济核心，定期产生阳光（每18秒+25阳光）。',
       svg: '<img src="images/plants/sunflower.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -1096,7 +1096,7 @@ function gameLoop() {
 
 // ========== 向日葵生产阳光 ==========
 
-const SUNFLOWER_PROD_INTERVAL = 10500; // 向日葵每18秒产一个阳光
+const SUNFLOWER_PROD_INTERVAL = 10500; // 向日葵每10.5秒产一个阳光（提升30%）
 
 /**
  * 更新所有向日葵，生产阳光
@@ -1616,10 +1616,10 @@ const ZOMBIE_IMAGES = {
 
 
 const ZOMBIE_TYPES = {
-  normal: { hp: 100, speed: 0.25, damage: 20, icon: 'zombie-normal', minWave: 1 },
-  cone: { hp: 200, speed: 0.22, damage: 25, icon: 'zombie-cone', minWave: 3 },
-  bucket: { hp: 400, speed: 0.18, damage: 30, icon: 'zombie-bucket', minWave: 5 },
-  flag: { hp: 100, speed: 0.25, damage: 20, icon: 'zombie-flag', minWave: 1 },
+  normal: { hp: 100, speed: 0.24, damage: 20, icon: 'zombie-normal', minWave: 1 },       // 0.4*0.6
+  cone: { hp: 200, speed: 0.21, damage: 25, icon: 'zombie-cone', minWave: 3 },            // 0.35*0.6
+  bucket: { hp: 400, speed: 0.18, damage: 30, icon: 'zombie-bucket', minWave: 5 },        // 0.3*0.6
+  flag: { hp: 100, speed: 0.24, damage: 20, icon: 'zombie-flag', minWave: 1 },
   polevault: { hp: 150, speed: 0.35, damage: 25, icon: 'zombie-polevault', minWave: 6, canJump: true },
   newspaper: { hp: 250, speed: 0.15, damage: 25, icon: 'zombie-newspaper', minWave: 7, enraged: false },
   screenDoor: { hp: 700, speed: 0.12, damage: 30, icon: 'zombie-screenDoor', minWave: 8, hasShield: true },
@@ -1809,7 +1809,12 @@ function triggerLawnMower(row) {
 
 function startZombieSpawner() {
   const levelData = LEVELS[gameState.currentLevel - 1];
-  spawnWave();
+  // 首波延迟20秒（与原版一致）
+  setTimeout(() => {
+    if (gameState.isRunning && !gameState.isPaused) {
+      spawnWave();
+    }
+  }, 20000);
   gameState.zombieSpawnTimer = setInterval(() => {
     if (gameState.isRunning && !gameState.isPaused && gameState.currentWave <= levelData.waves) {
       spawnWave();
