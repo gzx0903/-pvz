@@ -2316,6 +2316,22 @@ function showMainMenu() {
   leaderboardBtn.onclick = () => { if (typeof showLeaderboard === 'function') showLeaderboard(); };
   menu.appendChild(leaderboardBtn);
 
+  // 登录/注册按钮（游客状态显示）
+  if (!window.PVZ_USER) {
+    const loginBtn = document.createElement('button');
+    loginBtn.textContent = '🔐 登录 / 注册';
+    loginBtn.style.cssText = `
+      font-size: 16px; padding: 10px 30px;
+      background: linear-gradient(to bottom, #607D8B, #455A64);
+      color: white; border: 2px solid #78909C;
+      border-radius: 10px; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin-top: 10px;
+    `;
+    loginBtn.onclick = () => { if (typeof showAuthScreen === 'function') showAuthScreen(); };
+    menu.appendChild(loginBtn);
+  }
+
   // 一键解锁全部关卡按钮
   const unlockAllBtn = document.createElement('button');
   unlockAllBtn.textContent = '🔓 一键解锁全部关卡';

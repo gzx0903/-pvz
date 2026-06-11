@@ -391,6 +391,7 @@ function setupAuthEvents() {
   // 跳过登录
   document.getElementById('auth-skip-btn').addEventListener('click', () => {
     hideAuthScreen();
+    showUserBar();  // 显示游客栏
     if (typeof showMainMenu === 'function') showMainMenu();
   });
   
@@ -414,7 +415,19 @@ function showAuthInfo(msg) {
 }
 
 function showUserBar() {
-  if (!window.PVZ_USER) return;
+  let bar = document.getElementById('user-bar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'user-bar';
+    bar.style.cssText = 'position:fixed;top:8px;right:8px;z-index:9999;background:rgba(0,0,0,0.7);padding:6px 14px;border-radius:8px;font-size:13px;color:#8fc43a;font-family:Arial,sans-serif;display:flex;gap:12px;align-items:center;';
+    document.body.appendChild(bar);
+  }
+  // 游客状态
+  if (!window.PVZ_USER) {
+    bar.innerHTML = `<span>👤 游客</span><button onclick="showAuthScreen()" style="background:none;border:1px solid #8fc43a;color:#8fc43a;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:12px;">登录</button>`;
+    bar.style.display = 'flex';
+    return;
+  }
   let bar = document.getElementById('user-bar');
   if (!bar) {
     bar = document.createElement('div');
