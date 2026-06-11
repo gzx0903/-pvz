@@ -116,7 +116,7 @@ function offlineLogin(email, password) {
   hideAuthScreen();
   showUserBar();
   updateScoreDisplay(user.score || 0);
-  await showLeaderboard();  // 离线模式也显示排行榜
+  showLeaderboard();  // 离线模式也显示排行榜
   if (typeof showMainMenu === 'function') showMainMenu();
 }
 
