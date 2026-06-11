@@ -2394,7 +2394,7 @@ function showMainMenu() {
       btn.onmouseleave = () => btn.style.transform = 'scale(1)';
       const levelNum = i + 1;
       btn.onclick = () => {
-        if (typeof requireLogin === 'function' && window.LEAFCLOUD_READY) {
+        if (typeof requireLogin === 'function' && window.TCB_READY) {
           requireLogin(() => { menu.remove(); showGameUI(); startLevel(levelNum); });
         } else {
           menu.remove(); showGameUI(); startLevel(levelNum);
@@ -2418,7 +2418,7 @@ function showMainMenu() {
     margin-top: 10px;
   `;
   adventureBtn.onclick = () => {
-    if (typeof requireLogin === 'function' && window.LEAFCLOUD_READY) {
+    if (typeof requireLogin === 'function' && window.TCB_READY) {
       requireLogin(() => { menu.remove(); showGameUI(); startLevel(1); });
     } else {
       menu.remove(); showGameUI(); startLevel(1);
@@ -2522,14 +2522,14 @@ function initGame() {
   console.log('游戏初始化完成，事件监听器已绑定');
   
   // 显示主菜�?  // 如果 Firebase 已配置且用户已登录，显示用户信息
-  if (window.LEAFCLOUD_READY && window.PVZ_USER) {
+  if (window.TCB_READY && window.PVZ_USER) {
     const nameEl = document.getElementById('user-name');
     if (nameEl && window.PVZ_USER.displayName) nameEl.textContent = '👤 ' + window.PVZ_USER.displayName;
     const ub = document.getElementById('user-bar');
     if (ub) ub.style.display = 'flex';
   }
   // 如果 Firebase 已配置但用户未登录，显示登录界面
-  if (window.LEAFCLOUD_READY && !window.PVZ_USER) {
+  if (window.TCB_READY && !window.PVZ_USER) {
     const authScreen = document.getElementById('auth-screen');
     if (authScreen) authScreen.style.display = 'flex';
     // 继续显示主菜单（在登录界面下方，但被遮盖�?  }
