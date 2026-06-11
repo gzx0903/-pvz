@@ -1,3 +1,4 @@
+
 // ============================================================
 // 腾讯云开发 CloudBase 配置文件
 // 注册地址：https://console.cloud.tencent.com/tcb/env
@@ -8,9 +9,14 @@
 
 const TCB_ENV_ID = 'pvz-game-d1gwxo09f3b66d06c';   // 腾讯云开发环境 ID
 
+// 兼容性：SDK v2.x 暴露 window.cloudbase，代码使用 window.tcb
+if (typeof window.cloudbase !== 'undefined' && typeof window.tcb === 'undefined') {
+  window.tcb = window.cloudbase;
+}
+
 // 初始化
 (function () {
-  if (typeof tcb === 'undefined') {
+  if (typeof window.tcb === 'undefined') {
     console.warn('[TCB] CloudBase SDK 未加载，游戏将以离线模式运行。');
     window.TCB_READY = false;
     return;
@@ -20,7 +26,7 @@ const TCB_ENV_ID = 'pvz-game-d1gwxo09f3b66d06c';   // 腾讯云开发环境 ID
     window.TCB_READY = false;
     return;
   }
-  window.tcbApp = tcb.init({ env: TCB_ENV_ID });
+  window.tcbApp = window.tcb.init({ env: TCB_ENV_ID });
   window.TCB_READY = true;
   console.log('[TCB] CloudBase 初始化成功，环境:', TCB_ENV_ID);
 })();
