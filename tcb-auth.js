@@ -290,7 +290,8 @@ async function showLeaderboard() {
       }));
   }
   
-  container.innerHTML = entries.length === 0
+  const tbody = document.getElementById('leaderboard-tbody');
+  tbody.innerHTML = entries.length === 0
     ? '<tr><td colspan="5" style="text-align:center;padding:20px">暂无数据</td></tr>'
     : entries.map(e => `
         <tr>
