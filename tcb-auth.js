@@ -428,13 +428,6 @@ function showUserBar() {
     bar.style.display = 'flex';
     return;
   }
-  let bar = document.getElementById('user-bar');
-  if (!bar) {
-    bar = document.createElement('div');
-    bar.id = 'user-bar';
-    bar.style.cssText = 'position:fixed;top:8px;right:8px;z-index:9999;background:rgba(0,0,0,0.7);padding:6px 14px;border-radius:8px;font-size:13px;color:#8fc43a;font-family:Arial,sans-serif;display:flex;gap:12px;align-items:center;';
-    document.body.appendChild(bar);
-  }
   const mode = window.PVZ_USER._offline ? ' 🟡离线' : ' 🟢在线';
   bar.innerHTML = `
     <span>👤 ${window.PVZ_USER.username}${mode}</span>
