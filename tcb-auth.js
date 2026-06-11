@@ -15,7 +15,7 @@
 
 // ========== 配置 ==========
 const API_BASE_URL = typeof TCB_API_URL !== 'undefined' ? TCB_API_URL 
-  : 'https://pvz.game-d1gwxo09f3b66d06c.ap-shanghai.app.tcloudbase.com';
+  : 'https://pvz-game-d1gwxo09f3b66d06c-1442494480.ap-shanghai.app.tcloudbase.com';
 
 // ========== 全局状态 ==========
 window.PVZ_USER = null;
