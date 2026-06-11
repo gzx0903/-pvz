@@ -15,14 +15,14 @@ function initBGM() {
   const randomIndex = Math.floor(Math.random() * BGM_FILES.length);
   bgmPlayer.src = BGM_FILES[randomIndex];
   
-  console.log(`BGM初始�? ${BGM_FILES[randomIndex]}`);
+  console.log(`BGM初始化: ${BGM_FILES[randomIndex]}`);
 }
 
 function playBGM() {
   if (!bgmPlayer) initBGM();
   
   bgmPlayer.play().catch(e => {
-    console.log('BGM自动播放被阻止，需要用户交�?);
+    console.log('BGM自动播放被阻止，需要用户交互');
   });
 }
 
@@ -40,8 +40,11 @@ function setBGMVolume(volume) {
 
 // ========== 游戏配置 ==========
 const CONFIG = {
-  ROWS: 5,                // 5�?  COLS: 9,                // 9�?  CELL_SIZE: 70,           // 格子大小
-  SUN_VALUE: 100,          // 阳光初始值（提升开局体验�?  SUN_PER_CLICK: 25,       // 点击阳光获得25
+  ROWS: 5,                // 5行
+  COLS: 9,                // 9列
+  CELL_SIZE: 70,           // 格子大小
+  SUN_VALUE: 100,          // 阳光初始值（提升开局体验）
+  SUN_PER_CLICK: 25,       // 点击阳光获得25
   PLANT_COST: {            // 植物价格
     sunflower: 50,
     peashooter: 100,
@@ -54,13 +57,21 @@ const CONFIG = {
     repeater: 200
   },
   PLANT_COOLDOWN: {
-    sunflower: 3000,       // 3秒（快速补种经济核心）
-    peashooter: 5000,      // 5�?    wallnut: 35000,        // 35秒（高血量防御）
-    snowpea: 7500,         // 7.5�?    cherrybomb: 30000,     // 30�?    potatomine: 10000,     // 10�?    jalapeno: 20000,       // 20�?    chomper: 12000,        // 12�?    repeater: 7500         // 7.5�?  },
+    sunflower: 3000,       // 5秒（快速补种经济核心）
+    peashooter: 7500,      // 7.5秒（基础输出应快速可用）
+    wallnut: 35000,        // 35秒（高血量防御，加长CD平衡）
+    snowpea: 7500,         // 7.5秒（与豌豆射手同级）
+    cherrybomb: 30000,     // 30秒（大招适度冷却）
+    potatomine: 10000,     // 10秒（廉价陷阱快速可用）
+    jalapeno: 20000,       // 20秒（整列清场适度冷却）
+    chomper: 12000,        // 12秒（近战输出需要较高出场率）
+    repeater: 7500         // 7.5秒（高级输出与基础同级）
+  },
   PLANT_HP: {
     sunflower: 100,
     peashooter: 100,
-    wallnut: 3000,          // 坚果血量（�?00，现3000�?    snowpea: 100,
+    wallnut: 3000,          // 坚果墙血量(3000, 高血量防御)
+    snowpea: 100,
     cherrybomb: 100,
     potatomine: 100,
     jalapeno: 100,
@@ -69,14 +80,17 @@ const CONFIG = {
   },
   ZOMBIE_SPAWN_INTERVAL: 6000,  // 波次间隔基数(ms)
   SUN_DROP_INTERVAL: 8000,      // 阳光掉落间隔(ms)（加快经济节奏）
-  PEA_SHOOT_INTERVAL: 900,      // 豌豆射击间隔(900ms �?每秒1.1�?
-  PEA_SPEED: 4,                 // 豌豆移动速度（降�?0%�?  PEA_DAMAGE: 20,               // 豌豆伤害
+  PEA_SHOOT_INTERVAL: 900,      // 豌豆射击间隔(500ms = 每秒2颗)
+  PEA_SPEED: 4,                 // 豌豆移动速度
+  PEA_DAMAGE: 20,               // 豌豆伤害
   WAVE_BONUS_ZOMBIES: 1,        // 每波增加僵尸数量（放缓后期压力）
-  CHOMPER_RANGE: 80,            // 大嘴花攻击范�?px)
-  CHOMPER_CHEW_TIME: 2000,     // 大嘴花咀嚼时�?ms)
-  CHOMPER_DAMAGE: 80,          // 大嘴花每次咀嚼伤�?  JALAPENO_DAMAGE: 1800,       // 窝瓜火焰伤害
+  CHOMPER_RANGE: 80,            // 大嘴花攻击范围(px)
+  CHOMPER_CHEW_TIME: 2000,     // 大嘴花咀嚼时间(ms)
+  CHOMPER_DAMAGE: 80,          // 大嘴花每次咀嚼伤害
+  JALAPENO_DAMAGE: 1800,       // 窝瓜火焰伤害
   JALAPENO_DURATION: 1500,    // 窝瓜燃烧持续时间(ms)
-  REPEATER_DOUBLE: true        // 双发射手双倍火�?};
+  REPEATER_DOUBLE: true        // 双发射手双倍火力
+};
 
 // ========== 图鉴数据 ==========
 const ALMANAC_DATA = {
@@ -87,28 +101,28 @@ const ALMANAC_DATA = {
       cost: 100,
       hp: 100,
       damage: 20,
-      cooldown: '7.5�?,
-      desc: '基础政击植物，持续发射豌豆攻击僵尸�?,
+      cooldown: '7.5秒',
+      desc: '基础政击植物，持续发射豌豆攻击僵尸。',
       svg: '<img src="images/plants/peashooter.png" width="50" height="50" style="border-radius:8px">'
     },
     {
       type: 'sunflower',
-      name: '向日�?,
+      name: '向日葵',
       cost: 50,
       hp: 100,
       damage: 0,
-      cooldown: '5�?,
-      desc: '经济核心，定期产生阳光（�?8�?25阳光）�?,
+      cooldown: '3秒',
+      desc: '经济核心，定期产生阳光（每10.5秒+25阳光）。',
       svg: '<img src="images/plants/sunflower.png" width="50" height="50" style="border-radius:8px">'
     },
     {
       type: 'wallnut',
-      name: '坚果�?,
+      name: '坚果墙',
       cost: 50,
       hp: 1600,
       damage: 0,
-      cooldown: '35�?,
-      desc: '高血量防御植物，可阻挡僵尸前进。受损后外观会变化�?,
+      cooldown: '35秒',
+      desc: '高血量防御植物，可阻挡僵尸前进。受损后外观会变化。',
       svg: '<img src="images/plants/wallnut.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -117,8 +131,8 @@ const ALMANAC_DATA = {
       cost: 25,
       hp: 100,
       damage: 3000,
-      cooldown: '10�?,
-      desc: '廉价陷阱植物，僵尸踩中后爆炸造成大量伤害（秒杀）�?,
+      cooldown: '10秒',
+      desc: '廉价陷阱植物，僵尸踩中后爆炸造成大量伤害（秒杀）。',
       svg: '<img src="images/plants/potatomine.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -127,8 +141,8 @@ const ALMANAC_DATA = {
       cost: 175,
       hp: 100,
       damage: 20,
-      cooldown: '7.5�?,
-      desc: '发射冰冻豌豆，命中僵尸后减�?0%�?,
+      cooldown: '7.5秒',
+      desc: '发射冰冻豌豆，命中僵尸后减速50%。',
       svg: '<img src="images/plants/snowpea.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -137,8 +151,8 @@ const ALMANAC_DATA = {
       cost: 150,
       hp: 100,
       damage: 1800,
-      cooldown: '30�?,
-      desc: '范围爆炸植物，消灭周�?x3格子内所有僵尸�?,
+      cooldown: '30秒',
+      desc: '范围爆炸植物，消灭周围3x3格子内所有僵尸。',
       svg: '<img src="images/plants/cherrybomb.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -147,18 +161,18 @@ const ALMANAC_DATA = {
       cost: 125,
       hp: 100,
       damage: 1800,
-      cooldown: '20�?,
-      desc: '横向火焰攻击，消灭整行所有僵尸�?,
+      cooldown: '20秒',
+      desc: '横向火焰攻击，消灭整行所有僵尸。',
       svg: '<img src="images/plants/jalapeno.png" width="50" height="50" style="border-radius:8px">'
     },
     {
       type: 'chomper',
-      name: '大嘴�?,
+      name: '大嘴花',
       cost: 150,
       hp: 200,
       damage: 80,
-      cooldown: '12�?,
-      desc: '近战攻击植物，直接吞噬靠近的僵尸，咀嚼期间无法攻击�?,
+      cooldown: '12秒',
+      desc: '近战攻击植物，直接吞噬靠近的僵尸，咀嚼期间无法攻击。',
       svg: '<img src="images/plants/chomper.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -167,19 +181,19 @@ const ALMANAC_DATA = {
       cost: 200,
       hp: 100,
       damage: 40,
-      cooldown: '7.5�?,
-      desc: '高级攻击植物，每次发射两颗豌豆，火力翻倍�?,
+      cooldown: '7.5秒',
+      desc: '高级攻击植物，每次发射两颗豌豆，火力翻倍。',
       svg: '<img src="images/plants/DoublePea.png" width="50" height="50" style="border-radius:8px">'
     }
   ],
   zombies: [
     {
       type: 'normal',
-      name: '普通僵�?,
+      name: '普通僵尸',
       hp: 100,
       damage: 20,
       speed: '中等',
-      desc: '最常见的僵尸，缓慢但坚定地向房子前进�?,
+      desc: '最常见的僵尸，缓慢但坚定地向房子前进。',
       svg: '<img src="images/zombies/normal.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -188,7 +202,7 @@ const ALMANAC_DATA = {
       hp: 200,
       damage: 25,
       speed: '中等',
-      desc: '头顶路障的僵尸，防御力是普通僵尸的两倍�?,
+      desc: '头顶路障的僵尸，防御力是普通僵尸的两倍。',
       svg: '<img src="images/zombies/cone.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -197,7 +211,7 @@ const ALMANAC_DATA = {
       hp: 400,
       damage: 30,
       speed: '中等',
-      desc: '头顶铁桶的僵尸，防御力是普通僵尸的四倍，难以消灭�?,
+      desc: '头顶铁桶的僵尸，防御力是普通僵尸的四倍，难以消灭。',
       svg: '<img src="images/zombies/bucket.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -206,7 +220,7 @@ const ALMANAC_DATA = {
       hp: 100,
       damage: 20,
       speed: '中等',
-      desc: '举着旗帜的僵尸，标记波次开始。速度与普通僵尸相同�?,
+      desc: '举着旗帜的僵尸，标记波次开始。速度与普通僵尸相同。',
       svg: '<img src="images/zombies/flag.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -214,8 +228,8 @@ const ALMANAC_DATA = {
       name: '撑杆僵尸',
       hp: 150,
       damage: 25,
-      speed: '�?,
-      desc: '手持撑杆的僵尸，可以跳过第一个遇到的植物（一次性）�?,
+      speed: '快',
+      desc: '手持撑杆的僵尸，可以跳过第一个遇到的植物（一次性）。',
       svg: '<img src="images/zombies/polevault.png" width="50" height="50" style="border-radius:8px">'
     },
     {
@@ -224,25 +238,25 @@ const ALMANAC_DATA = {
       hp: 250,
       damage: 25,
       speed: '慢（暴怒后快）',
-      desc: '拿着报纸的僵尸，报纸被打烂后会暴怒加速�?,
+      desc: '拿着报纸的僵尸，报纸被打烂后会暴怒加速。',
       svg: '<img src="images/zombies/newspaper.png" width="50" height="50" style="border-radius:8px">'
     },
     {
       type: 'screenDoor',
-      name: '铁栅门僵�?,
+      name: '铁栅门僵尸',
       hp: 700,
       damage: 30,
-      speed: '�?,
-      desc: '举着铁栅门的僵尸，防御力极强，可以阻挡豌豆�?,
+      speed: '慢',
+      desc: '举着铁栅门的僵尸，防御力极强，可以阻挡豌豆。',
       svg: '<img src="images/zombies/screenDoor.png" width="50" height="50" style="border-radius:8px">'
     },
     {
       type: 'football',
-      name: '橄榄球僵�?,
+      name: '橄榄球僵尸',
       hp: 500,
       damage: 35,
-      speed: '�?,
-      desc: '戴着橄榄球头盔的僵尸，血量高、速度快、伤害高�?,
+      speed: '快',
+      desc: '戴着橄榄球头盔的僵尸，血量高、速度快、伤害高。',
       svg: '<img src="images/zombies/football.png" width="50" height="50" style="border-radius:8px">'
     }
   ]
@@ -250,7 +264,8 @@ const ALMANAC_DATA = {
 
 // ========== 关卡系统 ==========
 const LEVELS = [
-  { // 1-1 教学�?    level: 1, name: '1-1', desc: '初次冒险',
+  { // 1-1 教学关
+    level: 1, name: '1-1', desc: '初次冒险',
     plants: ['peashooter'],
     zombieTypes: ['normal'], waves: 3,
     startSun: 200, sunInterval: 7000,
@@ -260,7 +275,7 @@ const LEVELS = [
     activeRows: [2],
   },
   { // 1-2
-    level: 2, name: '1-2', desc: '阳光的力�?,
+    level: 2, name: '1-2', desc: '阳光的力量',
     plants: ['peashooter', 'sunflower'],
     zombieTypes: ['normal'], waves: 5, activeRows: [1,2,3],
     startSun: 100, sunInterval: 8000,
@@ -270,7 +285,7 @@ const LEVELS = [
       const base = Math.ceil(w * 0.6 + 1);
       const totalWaves = 5;
       const progress = w / totalWaves;
-      // 随机范围：前期�?，后期�?，最后波±2
+      // 随机范围：前期±0，后期±1，最后波±2
       const maxRandom = Math.floor(progress * 2) + (w === totalWaves ? 1 : 0);
       const offset = Math.floor(Math.random() * (maxRandom * 2 + 1)) - maxRandom;
       return Math.max(1, base + offset);
@@ -354,7 +369,7 @@ const LEVELS = [
     },
   },
   { // 1-8
-    level: 8, name: '1-8', desc: '大嘴花登�?,
+    level: 8, name: '1-8', desc: '大嘴花登场',
     plants: ['peashooter', 'sunflower', 'wallnut', 'potatomine', 'snowpea', 'cherrybomb', 'jalapeno', 'chomper'],
     zombieTypes: ['normal', 'cone', 'bucket', 'polevault', 'newspaper', 'screenDoor'], activeRows: [0,1,2,3,4], waves: 10,
     startSun: 100, sunInterval: 9000,
@@ -384,7 +399,7 @@ const LEVELS = [
     },
   },
   { // 1-10 最终关
-    level: 10, name: '1-10', desc: '最终决�?,
+    level: 10, name: '1-10', desc: '最终决战',
     plants: ['peashooter', 'sunflower', 'wallnut', 'potatomine', 'snowpea', 'cherrybomb', 'jalapeno', 'chomper', 'repeater'],
     zombieTypes: ['normal', 'cone', 'bucket', 'polevault', 'newspaper', 'screenDoor', 'football'], activeRows: [0,1,2,3,4], waves: 15,
     startSun: 150, sunInterval: 10000,
@@ -393,28 +408,33 @@ const LEVELS = [
       const base = Math.ceil(w * 1.6 + w * w * 0.02 + 1);
       const totalWaves = 15;
       const progress = w / totalWaves;
-      // 最终关随机波动最�?      const maxRandom = Math.floor(progress * 3.5) + (w === totalWaves ? 2 : 0);
+      // 最终关随机波动最大
+      const maxRandom = Math.floor(progress * 3.5) + (w === totalWaves ? 2 : 0);
       const offset = Math.floor(Math.random() * (maxRandom * 2 + 1)) - maxRandom;
       return Math.max(3, base + offset);
     },
   }
 ];
 
-// 获取关卡活跃�?function getActiveRows(levelNum) {
+// 获取关卡活跃行
+function getActiveRows(levelNum) {
   const levelData = LEVELS[levelNum - 1];
   if (levelData && levelData.activeRows) return levelData.activeRows;
-  return [0, 1, 2, 3, 4]; // 默认全部5�?}
+  return [0, 1, 2, 3, 4]; // 默认全部5行
+}
 
-// ========== 游戏状�?==========
+// ========== 游戏状态 ==========
 const gameState = {
   sun: 100,
   selectedPlant: null,
   shovelMode: false,
-  grid: [],                // 5x9网格，存储植物信�?  zombies: [],             // 僵尸列表
+  grid: [],                // 5x9网格，存储植物信息
+  zombies: [],             // 僵尸列表
   plants: [],              // 植物列表
   suns: [],                // 阳光列表
   bullets: [],             // 子弹列表
-  isRunning: false,        // 游戏是否运行�?  isPaused: false,         // 游戏是否暂停
+  isRunning: false,        // 游戏是否运行中
+  isPaused: false,         // 游戏是否暂停
   lastSunDrop: 0,
   lastZombieSpawn: 0,
   currentWave: 1,
@@ -422,12 +442,16 @@ const gameState = {
   gameResult: null,
   mowerUsed: [false, false, false, false, false],
   currentLevel: 1,         // 当前关卡
-  maxUnlockedLevel: 1,     // 已解锁最高关�?  animationFrameId: null,  // 游戏循环帧ID
+  maxUnlockedLevel: 1,     // 已解锁最高关卡
+  animationFrameId: null,  // 游戏循环帧ID
   timers: [],              // 所有interval/setTimeout ID
-  sunDropTimer: null,      // 阳光掉落定时�?  zombieSpawnTimer: null,  // 僵尸生成定时�?};
+  sunDropTimer: null,      // 阳光掉落定时器
+  zombieSpawnTimer: null,  // 僵尸生成定时器
+};
 
 // ========== DOM元素缓存 ==========
-// 注意：这些元素在 initGame() 中重新获取，因为脚本加载时DOM可能未完全解�?let elements = {};
+// 注意：这些元素在 initGame() 中重新获取，因为脚本加载时DOM可能未完全解析
+let elements = {};
 
 // ========== 工具函数 ==========
 
@@ -439,7 +463,8 @@ function updateSunDisplay() {
 }
 
 /**
- * 消耗阳�? */
+ * 消耗阳光
+ */
 function spendSun(cost) {
   if (gameState.sun >= cost) {
     gameState.sun -= cost;
@@ -458,7 +483,8 @@ function addSun(amount) {
 }
 
 /**
- * 获取格子中心点坐�? */
+ * 获取格子中心点坐标
+ */
 function getCellCenter(row, col) {
   const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
   if (!cell) return null;
@@ -471,7 +497,8 @@ function getCellCenter(row, col) {
 }
 
 /**
- * 检查格子是否为�? */
+ * 检查格子是否为空
+ */
 function isCellEmpty(row, col) {
   return !gameState.grid[row] || !gameState.grid[row][col];
 }
@@ -493,7 +520,8 @@ function placePlant(row, col, plantType) {
 }
 
 /**
- * 获取植物血�? */
+ * 获取植物血量
+ */
 function getPlantHP(type) {
   return CONFIG.PLANT_HP[type] || 100;
 }
@@ -509,7 +537,8 @@ function getPlantCooldown(type) {
 const lastPlacedTime = {};
 
 /**
- * 检查植物是否在冷却�? */
+ * 检查植物是否在冷却中
+ */
 function isPlantOnCooldown(plantType) {
   const lastPlaced = lastPlacedTime[plantType] || 0;
   const cooldown = getPlantCooldown(plantType);
@@ -519,19 +548,22 @@ function isPlantOnCooldown(plantType) {
 // ========== 植物卡片交互 ==========
 
 /**
- * 初始化植物卡片点击事�? */
+ * 初始化植物卡片点击事件
+ */
 function initPlantCards() {
   elements.plantCards.forEach(card => {
     card.addEventListener('click', () => {
       const plantType = card.dataset.plant;
       const cost = CONFIG.PLANT_COST[plantType];
       
-      // 检查阳光是否足�?      if (gameState.sun < cost) {
-        console.log(`阳光不足！需�?${cost}，当�?${gameState.sun}`);
+      // 检查阳光是否足够
+      if (gameState.sun < cost) {
+        console.log(`阳光不足！需要 ${cost}，当前 ${gameState.sun}`);
         return;
       }
       
-      // 检查冷�?      if (isPlantOnCooldown(plantType)) {
+      // 检查冷却
+      if (isPlantOnCooldown(plantType)) {
         const remaining = getPlantCooldown(plantType) - (Date.now() - lastPlacedTime[plantType]);
         console.log(`冷却中！还需 ${Math.ceil(remaining / 1000)} 秒`);
         return;
@@ -542,15 +574,17 @@ function initPlantCards() {
         toggleShovelMode();
       }
       
-      // 切换选中状�?      if (gameState.selectedPlant === plantType) {
+      // 切换选中状态
+      if (gameState.selectedPlant === plantType) {
         // 取消选中
         card.classList.remove('selected');
         gameState.selectedPlant = null;
       } else {
-        // 选中新植�?        elements.plantCards.forEach(c => c.classList.remove('selected'));
+        // 选中新植物
+        elements.plantCards.forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
         gameState.selectedPlant = plantType;
-        console.log(`选中植物: ${plantType}，消�? ${cost}`);
+        console.log(`选中植物: ${plantType}，消耗: ${cost}`);
       }
     });
   });
@@ -568,14 +602,15 @@ function toggleShovelMode() {
   if (gameState.shovelMode) {
     gameState.selectedPlant = null;
     elements.plantCards.forEach(c => c.classList.remove('selected'));
-    console.log('铲子模式已启�?);
+    console.log('铲子模式已启用');
   } else {
-    console.log('铲子模式已关�?);
+    console.log('铲子模式已关闭');
   }
 }
 
 /**
- * 初始化铲子按�? */
+ * 初始化铲子按钮
+ */
 function initShovel() {
   elements.shovelBtn.addEventListener('click', toggleShovelMode);
 }
@@ -583,7 +618,8 @@ function initShovel() {
 // ========== 草坪格子交互 ==========
 
 /**
- * 初始化草坪格子点击事�? */
+ * 初始化草坪格子点击事件
+ */
 function initLawn() {
   const cells = document.querySelectorAll('.cell');
   console.log('找到格子数量:', cells.length);
@@ -594,20 +630,16 @@ function initLawn() {
       const col = parseInt(cell.dataset.col);
       console.log('点击格子:', row, col, '选中植物:', gameState.selectedPlant);
       
-      // 铲子模式：移除植�?      if (gameState.shovelMode) {
+      // 铲子模式：移除植物
+      if (gameState.shovelMode) {
         if (!isCellEmpty(row, col)) {
           removePlant(row, col);
         }
         return;
       }
       
-      // 种植模式：放置植�?      if (gameState.selectedPlant) {
-        // 检查冷却（关键修复！）
-        if (isPlantOnCooldown(gameState.selectedPlant)) {
-          const remaining = getPlantCooldown(gameState.selectedPlant) - (Date.now() - lastPlacedTime[gameState.selectedPlant]);
-          console.log(`冷却中！还需 ${Math.ceil(remaining / 1000)} 秒`);
-          return;
-        }
+      // 种植模式：放置植物
+      if (gameState.selectedPlant) {
         if (isCellEmpty(row, col)) {
           const cost = CONFIG.PLANT_COST[gameState.selectedPlant];
           console.log('花费阳光:', cost, '当前阳光:', gameState.sun);
@@ -615,15 +647,15 @@ function initLawn() {
             placePlant(row, col, gameState.selectedPlant);
             renderPlant(row, col, gameState.selectedPlant);
             playSound('plant');
-            console.log(`�?(${row}, ${col}) 种植�?${gameState.selectedPlant}`);
+            console.log(`在 (${row}, ${col}) 种植了 ${gameState.selectedPlant}`);
           } else {
-            console.log('阳光不足�?);
+            console.log('阳光不足！');
           }
         } else {
           console.log(`格子 (${row}, ${col}) 已有植物`);
         }
       } else {
-        console.log('请先选择植物�?);
+        console.log('请先选择植物！');
       }
     });
   });
@@ -632,145 +664,6 @@ function initLawn() {
 /**
  * 在格子中渲染植物
  */
-
-// ========== 逐帧动画系统 ==========
-const REANIM_PATH = 'images/plants/reanim/';
-;
-
-// ANIMATIONS - 定义每个植物的动画序�?;
-
-// PlantSprite �?- 管理植物的逐帧动画
-
-
-// 更新所有植物动�?
-// ==========================================
-// 植物动画管理器（CSS 动画版本，无部件合成�?// ==========================================
-class PlantAnimator {
-  constructor(plantType, plantDiv) {
-    this.plantType = plantType;
-    this.div = plantDiv;
-    this.currentAnim = null;
-    this.frameIndex = 0;
-    this.lastFrameTime = 0;
-    this.animating = false;
-    this.destroyed = false;
-    this.animClass = null;
-
-    this.div.classList.add('plant-animated');
-    this.div.classList.add('plant-' + plantType + '-idle');
-
-    const img = document.createElement('img');
-    img.src = PLANT_IMAGES[plantType] || 'images/plants/peashooter.png';
-    img.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:50px;height:50px;pointer-events:none;display:block;';
-    this.img = img;
-    this.div.appendChild(img);
-
-    // 所有植物的idle动画
-    this._startIdle();
-  }
-
-  // 获取各植物的idle CSS类名
-  _idleClass() {
-    const map = {
-      peashooter: 'pea-idle-bob',
-      sunflower:  'sun-idle-bob',
-      wallnut:    'wallnut-idle-bob',
-      potatomine: 'potato-idle-wobble',
-      snowpea:    'snowpea-idle-bob',
-      cherrybomb: 'cherry-idle-pulse',
-      jalapeno:   'jalapeno-idle-glow',
-      chomper:    'chomper-idle-breathe',
-      repeater:   'repeater-idle-bob'
-    };
-    return map[this.plantType] || '';
-  }
-
-  // 获取各植物的攻击/特殊动作 CSS类名
-  _actionClass(animName) {
-    const map = {
-      peashooter: { shoot: 'pea-attack-shake' },
-      sunflower:  { produce: 'sun-produce-bounce' },
-      snowpea:    { shoot: 'snowpea-attack-shake' },
-      repeater:   { shoot: 'repeater-attack-shake' },
-      chomper:    { attack: 'chomper-attack-lunge' },
-      potatomine: { arm: 'potato-arm-shake' },
-      cherrybomb:{ explode: 'cherry-explode' },
-      jalapeno:   { attack: 'jalapeno-attack-burn' },
-      wallnut:    { hurt: 'wallnut-hurt-flinch' }
-    };
-    return (map[this.plantType] && map[this.plantType][animName]) || '';
-  }
-
-  _startIdle() {
-    const cls = this._idleClass();
-    if (cls) this.div.classList.add(cls);
-  }
-
-  play(animName) {
-    if (this.destroyed) return;
-
-    if (this._animTimer) { clearTimeout(this._animTimer); this._animTimer = null; }
-
-    // 移除idle和所有已知动画类
-    this.div.classList.remove(
-      'pea-idle-bob', 'sun-idle-bob', 'wallnut-idle-bob',
-      'potato-idle-wobble', 'snowpea-idle-bob', 'cherry-idle-pulse',
-      'jalapeno-idle-glow', 'chomper-idle-breathe', 'repeater-idle-bob',
-      'pea-attack-shake', 'sun-produce-bounce', 'snowpea-attack-shake',
-      'repeater-attack-shake', 'chomper-attack-lunge', 'potato-arm-shake',
-      'cherry-explode', 'jalapeno-attack-burn', 'wallnut-hurt-flinch'
-    );
-
-    const actionCls = this._actionClass(animName);
-    if (actionCls) {
-      this.div.classList.add(actionCls);
-      // 攻击/特殊动画结束后自动恢复idle
-      const durations = {
-        'pea-attack-shake': 450, 'sun-produce-bounce': 650,
-        'snowpea-attack-shake': 450, 'repeater-attack-shake': 500,
-        'chomper-attack-lunge': 600, 'potato-arm-shake': 400,
-        'cherry-explode': 800, 'jalapeno-attack-burn': 1500,
-        'wallnut-hurt-flinch': 300
-      };
-      const dur = durations[actionCls] || 500;
-      this._animTimer = setTimeout(() => {
-        if (this.destroyed) return;
-        this.div.classList.remove(actionCls);
-        this._startIdle();
-      }, dur);
-    } else {
-      // idle或未知动画，直接恢复idle
-      this._startIdle();
-    }
-  }
-
-  update(now) {
-    if (this.destroyed) return;
-  }
-
-  destroy() {
-    this.destroyed = true;
-    this.div.classList.remove(
-      'plant-animated', 'plant-' + this.plantType + '-idle',
-      'pea-idle-bob', 'sun-idle-bob', 'wallnut-idle-bob',
-      'potato-idle-wobble', 'snowpea-idle-bob', 'cherry-idle-pulse',
-      'jalapeno-idle-glow', 'chomper-idle-breathe', 'repeater-idle-bob',
-      'pea-attack-shake', 'sun-produce-bounce', 'snowpea-attack-shake',
-      'repeater-attack-shake', 'chomper-attack-lunge', 'potato-arm-shake',
-      'cherry-explode', 'jalapeno-attack-burn', 'wallnut-hurt-flinch'
-    );
-  }
-}
-
-
-function updatePlantAnimations(now) {
-  for (const plant of gameState.plants) {
-    if (plant.element && plant.element.sprite && !plant.element.sprite.destroyed) {
-      plant.element.sprite.update(now);
-    }
-  }
-}
-
 // PNG植物图形映射
 const PLANT_IMAGES = {
   sunflower: 'images/plants/sunflower.png',
@@ -796,23 +689,28 @@ function renderPlant(row, col, plantType) {
   plant.className = `plant plant-${plantType}`;
   plant.dataset.row = row;
   plant.dataset.col = col;
+  
+  // 使用PNG图形
+  if (PLANT_IMAGES[plantType]) {
+    const img = document.createElement("img");
+    img.src = PLANT_IMAGES[plantType];
+    img.style.width = "50px";
+    img.style.height = "50px";
+    img.style.pointerEvents = "none";
+    plant.appendChild(img);
+  }
+
+  
   plant.style.position = 'absolute';
   plant.style.left = '50%';
   plant.style.top = '50%';
   plant.style.transform = 'translate(-50%, -50%)';
-  plant.style.width = '50px';
-  plant.style.height = '50px';
-  
-  // 所有植物使�?CSS 动画系统
-  if (PLANT_IMAGES[plantType]) {
-    const sprite = new PlantAnimator(plantType, plant);
-    plant.sprite = sprite;
-  }
   
   cell.appendChild(plant);
   cell.classList.add('occupied');
   
-  // 添加到游戏状�?  const plantObj = {
+  // 添加到游戏状态
+  const plantObj = {
     type: plantType,
     row: row,
     col: col,
@@ -822,18 +720,18 @@ function renderPlant(row, col, plantType) {
     lastShootTime: 0
   };
   gameState.plants.push(plantObj);
-  if (typeof onPlantPlaced === 'function') onPlantPlaced();
   
   // 樱桃炸弹特殊处理：种植后立即爆炸
   if (plantType === 'cherrybomb') {
     setTimeout(() => detonateCherryBomb(plantObj), 500);
   }
   
-  // 窝瓜特殊处理：种植后自动激�?  if (plantType === 'jalapeno') {
+  // 窝瓜特殊处理：种植后自动激活
+  if (plantType === 'jalapeno') {
     activateJalapenoOnPlace(plantObj);
   }
   
-  // 土豆地雷特殊处理：准�?5秒后生效
+  // 土豆地雷特殊处理：准备15秒后生效
   if (plantType === 'potatomine') {
     plantObj.ready = false;
     plant.style.opacity = '0.5';
@@ -874,14 +772,12 @@ function removePlant(row, col) {
   gameState.plants = gameState.plants.filter(p => {
     if (p.row === row && p.col === col) {
       p.element = null; // 清理引用防止僵尸访问已删除的DOM
-      // 清理sprite
-      if (typeof onPlantDestroyed === 'function') onPlantDestroyed();
       return false;
     }
     return true;
   });
   
-  console.log(`移除�?(${row}, ${col}) 的植物`);
+  console.log(`移除了 (${row}, ${col}) 的植物`);
 }
 
 // ========== 阳光掉落系统 ==========
@@ -893,7 +789,7 @@ function removePlant(row, col) {
 function createSunElement(x, y, fromSky = true) {
   const sun = document.createElement('div');
   sun.className = 'falling-sun';
-  sun.textContent = "☀�?;
+  sun.textContent = "☀️";
   sun.style.fontSize = "38px";
   sun.style.position = 'absolute';
   sun.style.left = x + 'px';
@@ -909,14 +805,17 @@ function createSunElement(x, y, fromSky = true) {
     x: x,
     y: y,
     fromSky: fromSky,
-    falling: fromSky,      // 只有天空掉的才下�?    fallSpeed: fromSky ? 1.5 : 0.3, // 向日葵的很慢
-    maxY: y + (fromSky ? 300 : 80), // 向日葵的只飘一�?    createdAt: Date.now(),
+    falling: fromSky,      // 只有天空掉的才下落
+    fallSpeed: fromSky ? 1.5 : 0.3, // 向日葵的很慢
+    maxY: y + (fromSky ? 300 : 80), // 向日葵的只飘一点
+    createdAt: Date.now(),
     id: Date.now() + Math.random()
   };
   
   gameState.suns.push(sunObj);
   
-  // 鼠标悬停收集（无需点击�?  sun.addEventListener('mouseenter', () => collectSun(sunObj));
+  // 点击收集
+  sun.addEventListener('mouseenter', () => collectSun(sunObj));
   
   // 非天空掉的阳光：8秒后自动消失（比天空掉的长）
   if (!fromSky) {
@@ -936,7 +835,8 @@ function createSunElement(x, y, fromSky = true) {
 
 
 /**
- * 从天空随机掉落阳�? */
+ * 从天空随机掉落阳光
+ */
 function dropSunFromSky() {
   const lawn = elements.lawn;
   const rect = lawn.getBoundingClientRect();
@@ -946,7 +846,8 @@ function dropSunFromSky() {
   const maxX = rect.right - 80;
   const x = minX + Math.random() * (maxX - minX);
   
-  // 从顶部掉�?  const y = rect.top - 50;
+  // 从顶部掉落
+  const y = rect.top - 50;
   
   createSunElement(x, y, true);
   console.log('阳光从天空掉落！');
@@ -994,7 +895,8 @@ function updateSuns() {
     // 停止下落条件
     if (sunObj.y >= sunObj.maxY) {
       sunObj.falling = false;
-      // �?秒时间收�?      setTimeout(() => {
+      // 给3秒时间收集
+      setTimeout(() => {
         if (sunObj.element && sunObj.element.parentNode) {
           sunObj.element.style.opacity = '0';
           setTimeout(() => {
@@ -1012,7 +914,8 @@ function updateSuns() {
  */
 function startSunDropTimer(interval) {
   const sunInterval = interval || CONFIG.SUN_DROP_INTERVAL;
-  // 先掉落一个阳�?  setTimeout(() => { if (gameState.isRunning) dropSunFromSky(); }, 1000);
+  // 先掉落一个阳光
+  setTimeout(() => { if (gameState.isRunning) dropSunFromSky(); }, 1000);
   
   // 定时掉落
   gameState.sunDropTimer = setInterval(() => {
@@ -1023,7 +926,8 @@ function startSunDropTimer(interval) {
 }
 
 /**
- * 游戏主循�? */
+ * 游戏主循环
+ */
 /**
  * 播放音效
  */
@@ -1089,7 +993,8 @@ function playSound(type) {
 }
 
 /**
- * 更新植物卡片冷却计时器显�? */
+ * 更新植物卡片冷却计时器显示
+ */
 function updateCooldownTimers() {
   elements.plantCards.forEach(card => {
     const plantType = card.dataset.plant;
@@ -1117,12 +1022,14 @@ function updateCooldownTimers() {
 }
 
 /**
- * 更新僵尸血条显�? */
+ * 更新僵尸血条显示
+ */
 function updateZombieHPBars() {
   gameState.zombies.forEach(zombie => {
     if (!zombie.element) return;
     
-    // 获取或创建血条元�?    let hpBar = zombie.element.querySelector('.zombie-hp-bar');
+    // 获取或创建血条元素
+    let hpBar = zombie.element.querySelector('.zombie-hp-bar');
     if (!hpBar) {
       hpBar = document.createElement('div');
       hpBar.className = 'zombie-hp-bar';
@@ -1140,7 +1047,8 @@ function updateZombieHPBars() {
       zombie.element.appendChild(hpBar);
     }
     
-    // 更新血条宽�?    const hpPercent = Math.max(0, zombie.hp / zombie.maxHp * 100);
+    // 更新血条宽度
+    const hpPercent = Math.max(0, zombie.hp / zombie.maxHp * 100);
     let hpColor = '#00ff00';
     if (hpPercent < 30) hpColor = '#ff0000';
     else if (hpPercent < 60) hpColor = '#ffff00';
@@ -1161,7 +1069,8 @@ function updateZombieHPBars() {
       hpFill.style.background = hpColor;
     }
     
-    // 如果僵尸死亡，移除血�?    if (zombie.hp <= 0 && hpBar) {
+    // 如果僵尸死亡，移除血条
+    if (zombie.hp <= 0 && hpBar) {
       hpBar.remove();
     }
   });
@@ -1170,7 +1079,6 @@ function updateZombieHPBars() {
 function gameLoop() {
   if (!gameState.isRunning || gameState.isPaused) return;
   
-  updatePlantAnimations();
   updateSuns();
   updateSunflowers();
   updatePeashooters();
@@ -1186,23 +1094,27 @@ function gameLoop() {
   gameState.animationFrameId = requestAnimationFrame(gameLoop);
 }
 
-// ========== 向日葵生产阳�?==========
+// ========== 向日葵生产阳光 ==========
 
-const SUNFLOWER_PROD_INTERVAL = 10500; // 向日葵每10.5秒产一个阳光（提升30%�?
+const SUNFLOWER_PROD_INTERVAL = 10500; // 向日葵每18秒产一个阳光
+
 /**
- * 更新所有向日葵，生产阳�? */
+ * 更新所有向日葵，生产阳光
+ */
 function updateSunflowers() {
   const now = Date.now();
   
   gameState.plants.forEach(plant => {
     if (plant.type !== 'sunflower') return;
     
-    // 初始化上次生产时�?    if (!plant.lastSunProduction) {
+    // 初始化上次生产时间
+    if (!plant.lastSunProduction) {
       plant.lastSunProduction = now;
       return;
     }
     
-    // 检查是否到了生产时�?    if (now - plant.lastSunProduction >= SUNFLOWER_PROD_INTERVAL) {
+    // 检查是否到了生产时间
+    if (now - plant.lastSunProduction >= SUNFLOWER_PROD_INTERVAL) {
       produceSunFromSunflower(plant);
       plant.lastSunProduction = now;
     }
@@ -1216,18 +1128,14 @@ function produceSunFromSunflower(plant) {
   const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
   if (!cell) return;
   
-  // 播放生产动画
-  if (plant.element && plant.element.sprite) {
-    plant.element.sprite.play('produce');
-  }
-  
   const rect = cell.getBoundingClientRect();
   
   // 阳光从向日葵中心偏上位置产生
   const x = rect.left + rect.width / 2 - 30; // 居中（减去阳光宽度一半）
   const y = rect.top + rect.height / 4;
   
-  createSunElement(x, y, false); // fromSky=false 表示来自向日�?  console.log(`向日�?(${plant.row}, ${plant.col}) 生产了阳光！`);
+  createSunElement(x, y, false); // fromSky=false 表示来自向日葵
+  console.log(`向日葵 (${plant.row}, ${plant.col}) 生产了阳光！`);
 }
 
 // ========== 豌豆射手射击系统 ==========
@@ -1257,10 +1165,12 @@ function updatePeashooters() {
     if (plant.type !== 'peashooter' && plant.type !== 'snowpea') return;
     if (!plant.element) return;
     
-    // 检查是否有僵尸在这一�?    const zombiesInRow = gameState.zombies.some(z => z.row === plant.row && z.x > 0 && z.element);
+    // 检查是否有僵尸在这一行
+    const zombiesInRow = gameState.zombies.some(z => z.row === plant.row && z.x > 0 && z.element);
     
     if (zombiesInRow) {
-      // 检查射击间�?      if (!plant.lastShootTime) plant.lastShootTime = 0;
+      // 检查射击间隔
+      if (!plant.lastShootTime) plant.lastShootTime = 0;
       
       if (now - plant.lastShootTime >= CONFIG.PEA_SHOOT_INTERVAL) {
         shootPea(plant);
@@ -1277,17 +1187,13 @@ function shootPea(plant) {
   const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
   if (!cell || !plant.element) return;
   
-  // 播放射击动画
-  if (plant.element && plant.element.sprite) {
-    plant.element.sprite.play('shoot');
-  }
-  
   const cellRect = cell.getBoundingClientRect();
   const rowEl = document.querySelector(`.row[data-row="${plant.row}"]`);
   if (!rowEl) return;
   const rowRect = rowEl.getBoundingClientRect();
   
-  // 子弹从植物右侧发射（PNG图片�?  const pea = document.createElement('div');
+  // 子弹从植物右侧发射（PNG图片）
+  const pea = document.createElement('div');
   pea.className = plant.type === 'snowpea' ? 'pea snow-pea' : 'pea';
   pea.style.position = 'absolute';
   pea.style.left = (cellRect.right) + 'px';
@@ -1322,7 +1228,8 @@ function shootPea(plant) {
 }
 
 /**
- * 更新所有子�? */
+ * 更新所有子弹
+ */
 function updateBullets() {
   gameState.bullets = gameState.bullets.filter(bullet => {
     if (!bullet.element) return false;
@@ -1331,12 +1238,14 @@ function updateBullets() {
     bullet.x += bullet.speed;
     bullet.element.style.left = bullet.x + 'px';
     
-    // 检查是否超出屏�?    if (bullet.x > window.innerWidth) {
+    // 检查是否超出屏幕
+    if (bullet.x > window.innerWidth) {
       bullet.element.remove();
       return false;
     }
     
-    // 检查是否击中僵�?    for (const zombie of gameState.zombies) {
+    // 检查是否击中僵尸
+    for (const zombie of gameState.zombies) {
       if (!zombie.element) continue;
       if (zombie.row !== bullet.row) continue;
       
@@ -1359,7 +1268,10 @@ function hitZombie(zombie, damage, isSnowpea) {
   zombie.hp -= damage;
   playSound('shoot');
   
-  // 减速效果（雪花豌豆�?  if (isSnowpea) {
+  // 击退效果已移除
+  
+  // 减速效果（雪花豌豆）
+  if (isSnowpea) {
     if (!zombie.baseSpeed) zombie.baseSpeed = zombie.speed;
     zombie.speed = zombie.baseSpeed * 0.5;
     if (zombie.element) {
@@ -1368,14 +1280,18 @@ function hitZombie(zombie, damage, isSnowpea) {
     }
   }
   
-  console.log(`子弹击中僵尸！剩余血�? ${zombie.hp}`);
+  // 击中动画
+  if (zombie.element) {
+    zombie.element.style.transform = 'translateX(5px)';
+    setTimeout(() => { if (zombie.element) zombie.element.style.transform = ''; }, 100);
+  }
+  
+  console.log(`子弹击中僵尸！剩余血量: ${zombie.hp}`);
   
   if (zombie.hp <= 0) {
     if (zombie.element) zombie.element.remove();
     gameState.zombies = gameState.zombies.filter(z => z.id !== zombie.id);
-    gameState.zombiesKilled++;
-    console.log('僵尸被击杀�?);
-    if (typeof onZombieKilled === 'function') onZombieKilled();
+    console.log('僵尸被击杀！');
   }
 }
 
@@ -1385,11 +1301,8 @@ function hitZombie(zombie, damage, isSnowpea) {
 function detonateCherryBomb(plant) {
   if (!plant.element) return;
   
-  console.log(`樱桃炸弹�?(${plant.row}, ${plant.col}) 爆炸！`);
+  console.log(`樱桃炸弹在 (${plant.row}, ${plant.col}) 爆炸！`);
   playSound('explosion');
-  
-  // 播放爆炸动画
-  if (plant.element.sprite) plant.element.sprite.play('explode');
   
   const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
   if (cell) {
@@ -1431,11 +1344,12 @@ function detonateCherryBomb(plant) {
 // ========== 窝瓜系统 ==========
 
 /**
- * 窝瓜燃烧 - 消灭同列所有僵�? */
+ * 窝瓜燃烧 - 消灭同列所有僵尸
+ */
 function activateJalapeno(plant) {
   if (!plant.element) return;
   
-  console.log(`窝瓜�?(${plant.row}, ${plant.col}) 激活！`);
+  console.log(`窝瓜在 (${plant.row}, ${plant.col}) 激活！`);
   
   // 显示火焰效果
   const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
@@ -1474,76 +1388,72 @@ function activateJalapeno(plant) {
   
   gameState.zombies = gameState.zombies.filter(z => z.hp > 0);
   
-  // 窝瓜消耗自�?  setTimeout(() => {
+  // 窝瓜消耗自己
+  setTimeout(() => {
     removePlant(plant.row, plant.col);
   }, CONFIG.JALAPENO_DURATION);
 }
 
 /**
- * 更新窝瓜状�?- 种植后自动激�? */
+ * 更新窝瓜状态 - 种植后自动激活
+ */
 function activateJalapenoOnPlace(plant) {
   setTimeout(() => {
     if (plant.element) {
-      // 播放攻击动画
-      if (plant.element.sprite) plant.element.sprite.play('attack');
       activateJalapeno(plant);
     }
   }, 500);
 }
 
-// ========== 大嘴花系�?==========
+// ========== 大嘴花系统 ==========
 
-// 大嘴花SVG状�?const CHOMPER_SVG_NORMAL = '<img src="images/plants/chomper.png" width="50" height="50" style="pointer-events:none">';
+// 大嘴花SVG状态
+const CHOMPER_SVG_NORMAL = '<img src="images/plants/chomper.png" width="50" height="50" style="pointer-events:none">';
 
 const CHOMPER_SVG_CHEWING = '<img src="images/plants/chomper.png" width="50" height="50" style="pointer-events:none;opacity:0.7">';
 
 /**
- * 咀嚼僵�? */
+ * 咀嚼僵尸
+ */
 function chomperChew(plant, zombie) {
   if (!plant.element || plant.chewing) return;
   
   plant.chewing = true;
-  plant.currentTarget = zombie;
-  
   playSound('chomp');
   
-  // 播放攻击动画
-  if (plant.element.sprite) plant.element.sprite.play('attack');
-  
-  // 秒杀：直接移除僵�?  if (zombie.element) zombie.element.remove();
+  // 秒杀：直接移除僵尸
   zombie.hp = 0;
+  if (zombie.element) zombie.element.remove();
   gameState.zombies = gameState.zombies.filter(z => z.id !== zombie.id);
   gameState.zombiesKilled++;
   
-  // 咀嚼动画持续一段时间后恢复
+  // 咀嚼动画（30秒冷却）
+  plant.element.style.opacity = '0.5';
   setTimeout(() => {
     plant.chewing = false;
-    plant.currentTarget = null;
+    if (plant.element) plant.element.style.opacity = '1';
   }, 30000);
 }
 
 /**
- * 更新大嘴花状�? */
+ * 更新大嘴花状态
+ */
 function updateChompers() {
   gameState.plants.forEach(plant => {
     if (plant.type !== 'chomper' || plant.chewing) return;
     if (!plant.element) return;
-    
-    // 获取植物的页面坐�?    const plantRect = plant.element.getBoundingClientRect();
-    const plantCenterX = plantRect.left + plantRect.width / 2;
     
     // 检查是否有僵尸在攻击范围内
     for (const zombie of gameState.zombies) {
       if (!zombie.element) continue;
       if (zombie.row !== plant.row) continue;
       
-      // �?getBoundingClientRect 保证坐标系一�?      const zombieRect = zombie.element.getBoundingClientRect();
-      const zombieCenterX = zombieRect.left + zombieRect.width / 2;
+      const zombieCenterX = zombie.x + 40;
+      const plantX = plant.col * CONFIG.CELL_SIZE + CONFIG.CELL_SIZE / 2;
       
-      // 触发范围：僵尸中心距离植物中�?150px �?      const dist = plantCenterX - zombieCenterX; // 正数=僵尸在植物右�?      if (dist >= -150 && dist <= 0) {
-        if (Math.random() < 0.01) {
-          console.log(`大嘴花[${plant.row},${plant.col}]检�? 植物X=${plantCenterX.toFixed(0)}, 僵尸X=${zombieCenterX.toFixed(0)}, 距离=${dist.toFixed(0)}`);
-        }
+      // 如果僵尸进入咀嚼范围
+      if (zombieCenterX >= plantX - CONFIG.CHOMPER_RANGE && 
+          zombieCenterX <= plantX + CONFIG.CHOMPER_RANGE + 40) {
         chomperChew(plant, zombie);
         return;
       }
@@ -1578,24 +1488,19 @@ function updateRepeaters() {
     if (now - plant.lastShootTime < CONFIG.PEA_SHOOT_INTERVAL) return;
     plant.lastShootTime = now;
     
-    // 播放攻击动画
-    if (plant.element && plant.element.sprite) plant.element.sprite.play('shoot');
-    
-    // 发射双倍豌豆（调用 shootPea，与豌豆射手共用同一函数�?    for (let i = 0; i < 2; i++) {
-      setTimeout(() => {
-        if (plant.element) {
-          shootPea(plant);
-          playSound('shoot');
-        }
-      }, i * 100);
-    }
+    // 发射两颗豌豆（间隔100ms）
+    shootPea(plant);
+    setTimeout(() => {
+      if (plant.element) shootPea(plant);
+    }, 100);
   });
 }
 
 // ========== 土豆地雷系统 ==========
 
 /**
- * 更新所有土豆地雷，检查是否被�? */
+ * 更新所有土豆地雷，检查是否被踩
+ */
 function updatePotatoMines() {
   const now = Date.now();
   
@@ -1607,25 +1512,16 @@ function updatePotatoMines() {
     const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
     if (!cell) return;
     const cellRect = cell.getBoundingClientRect();
-    const cellCenterX = cellRect.left + cellRect.width / 2;
     
     for (const zombie of gameState.zombies) {
       if (!zombie.element) continue;
       if (zombie.row !== plant.row) continue;
       
-      // 统一�?getBoundingClientRect 获取页面坐标
-      const zRect = zombie.element.getBoundingClientRect();
-      
-      // 触发条件：僵尸任何部分进入格子范围（放宽判定�?      const zombieLeft = zRect.left;
-      const zombieRight = zRect.right;
-      
-      // 调试日志（采样输出，避免刷屏�?      if (Math.random() < 0.01) {
-        console.log(`土豆地雷[${plant.row},${plant.col}]检�? 格子中心=${cellCenterX.toFixed(0)}, 僵尸[${zombieLeft.toFixed(0)}, ${zombieRight.toFixed(0)}]`);
-      }
-      
-      // 僵尸与格子有重叠
-      if (zombieLeft <= cellRect.right && zombieRight >= cellRect.left) {
-        console.log(`土豆地雷触发！格子[${cellRect.left.toFixed(0)}, ${cellRect.right.toFixed(0)}] 僵尸[${zombieLeft.toFixed(0)}, ${zombieRight.toFixed(0)}]`);
+      const zombieRect = zombie.element.getBoundingClientRect();
+      // 僵尸中心在格子范围内
+      const zombieCenterX = zombie.x + 40;
+      if (zombieCenterX >= cellRect.left && zombieCenterX <= cellRect.right) {
+        // 踩到地雷！爆炸！
         detonatePotatoMine(plant, zombie);
         return;
       }
@@ -1639,7 +1535,7 @@ function updatePotatoMines() {
 function detonatePotatoMine(plant, zombie) {
   if (!plant.element) return;
   
-  console.log(`土豆地雷�?(${plant.row}, ${plant.col}) 爆炸！`);
+  console.log(`土豆地雷在 (${plant.row}, ${plant.col}) 爆炸！`);
   
   const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
   if (cell) {
@@ -1672,62 +1568,40 @@ function detonatePotatoMine(plant, zombie) {
   removePlant(plant.row, plant.col);
 }
 
-// ========== 植物视觉状态更�?==========
+// ========== 植物视觉状态更新 ==========
 
 /**
- * 更新所有植物的视觉状态（如坚果墙受损程度�? */
+ * 更新所有植物的视觉状态（如坚果墙受损程度）
+ */
 function updatePlantVisuals() {
   gameState.plants.forEach(plant => {
     if (!plant.element) return;
     
-    // 坚果墙受损状�?    if (plant.type === 'wallnut') {
+    // 坚果墙受损状态
+    if (plant.type === 'wallnut') {
       const hpPercent = plant.hp / plant.maxHp;
       
       if (hpPercent <= 0) {
-        // 死亡状�?- 不处理，由removePlant处理
+        // 死亡状态 - 不处理，由removePlant处理
       } else if (hpPercent <= 0.33) {
-        // 重度受损�? 33% HP�?        plant.element.classList.remove('wallnut-light');
+        // 重度受损（< 33% HP）
+        plant.element.classList.remove('wallnut-light');
         plant.element.classList.add('wallnut-heavy');
         plant.element.style.filter = 'brightness(0.5) saturate(0.3)';
       } else if (hpPercent <= 0.66) {
-        // 轻度受损�?3-66% HP�?        plant.element.classList.remove('wallnut-heavy');
+        // 轻度受损（33-66% HP）
+        plant.element.classList.remove('wallnut-heavy');
         plant.element.classList.add('wallnut-light');
         plant.element.style.filter = 'brightness(0.75) saturate(0.7)';
       } else {
-        // 正常状态（> 66% HP�?        plant.element.classList.remove('wallnut-light', 'wallnut-heavy');
+        // 正常状态（> 66% HP）
+        plant.element.classList.remove('wallnut-light', 'wallnut-heavy');
         plant.element.style.filter = '';
       }
     }
   });
 }
 // PNG僵尸图形映射
-
-// ==========================================
-// 植物帧动画数据（简化版：使用全图PNG序列�?// ==========================================
-const PLANT_ANIM_FRAMES = {
-  peashooter: {
-    idle: ['images/plants/peashooter.png'],
-    shoot: ['images/plants/peashooter.png'], // 单帧，动画靠CSS
-  },
-  sunflower: {
-    idle: ['images/plants/sunflower.png'],
-    produce: ['images/plants/sunflower.png'],
-  }
-};
-
-// 主动画字典：植物类型 -> { idle帧数�? shoot帧数�? ... }
-const PLANT_FRAMES = {
-  peashooter: {
-    idle:   ['images/plants/peashooter.png'],
-    attack: ['images/plants/peashooter.png'],
-  },
-  sunflower: {
-    idle:    ['images/plants/sunflower.png'],
-    produce: ['images/plants/sunflower.png'],
-  }
-};
-
-
 const ZOMBIE_IMAGES = {
   normal: 'images/zombies/normal.png',
   cone: 'images/zombies/cone.png',
@@ -1742,14 +1616,14 @@ const ZOMBIE_IMAGES = {
 
 
 const ZOMBIE_TYPES = {
-  normal: { hp: 100, speed: 0.24, damage: 20, icon: 'zombie-normal', minWave: 1 },       // 0.4*0.6
-  cone: { hp: 200, speed: 0.21, damage: 25, icon: 'zombie-cone', minWave: 3 },            // 0.35*0.6
-  bucket: { hp: 400, speed: 0.18, damage: 30, icon: 'zombie-bucket', minWave: 5 },        // 0.3*0.6
-  flag: { hp: 100, speed: 0.24, damage: 20, icon: 'zombie-flag', minWave: 1 },           // 0.4*0.6
-  polevault: { hp: 150, speed: 0.33, damage: 25, icon: 'zombie-polevault', minWave: 6, canJump: true },  // 0.55*0.6
-  newspaper: { hp: 250, speed: 0.15, damage: 25, icon: 'zombie-newspaper', minWave: 7, enraged: false }, // 0.25*0.6
-  screenDoor: { hp: 700, speed: 0.12, damage: 30, icon: 'zombie-screenDoor', minWave: 8, hasShield: true }, // 0.2*0.6
-  football: { hp: 500, speed: 0.3, damage: 35, icon: 'zombie-football', minWave: 9 }     // 0.5*0.6
+  normal: { hp: 100, speed: 0.25, damage: 20, icon: 'zombie-normal', minWave: 1 },
+  cone: { hp: 200, speed: 0.22, damage: 25, icon: 'zombie-cone', minWave: 3 },
+  bucket: { hp: 400, speed: 0.18, damage: 30, icon: 'zombie-bucket', minWave: 5 },
+  flag: { hp: 100, speed: 0.25, damage: 20, icon: 'zombie-flag', minWave: 1 },
+  polevault: { hp: 150, speed: 0.35, damage: 25, icon: 'zombie-polevault', minWave: 6, canJump: true },
+  newspaper: { hp: 250, speed: 0.15, damage: 25, icon: 'zombie-newspaper', minWave: 7, enraged: false },
+  screenDoor: { hp: 700, speed: 0.12, damage: 30, icon: 'zombie-screenDoor', minWave: 8, hasShield: true },
+  football: { hp: 500, speed: 0.3, damage: 35, icon: 'zombie-football', minWave: 9 }
 };
 
 function getZombiesContainer() {
@@ -1769,7 +1643,8 @@ function spawnZombie() {
   const row = activeRows[Math.floor(Math.random() * activeRows.length)];
   // 根据关卡可用僵尸类型选择
   const availableTypes = levelData.zombieTypes;
-  // 高波次增加高级僵尸概�?  let type;
+  // 高波次增加高级僵尸概率
+  let type;
   if (availableTypes.includes('bucket') && gameState.currentWave >= levelData.waves - 2 && Math.random() < 0.35) {
     type = 'bucket';
   } else if (availableTypes.includes('cone') && gameState.currentWave >= Math.floor(levelData.waves / 2) && Math.random() < 0.3) {
@@ -1789,8 +1664,8 @@ function spawnZombie() {
   if (ZOMBIE_IMAGES[type]) {
     const img = document.createElement("img");
     img.src = ZOMBIE_IMAGES[type];
-    img.style.width = "65px";
-    img.style.height = "95px";
+    img.style.width = "45px";
+    img.style.height = "70px";
     img.style.pointerEvents = "none";
     zombieEl.appendChild(img);
   }
@@ -1799,7 +1674,7 @@ function spawnZombie() {
   getZombiesContainer().appendChild(zombieEl);
   
   const startX = lawnRect.right + 20;
-  const startY = rowRect.top + (rowRect.height - 95) / 2;
+  const startY = rowRect.top + (rowRect.height - 70) / 2;
   
   zombieEl.style.left = startX + 'px';
   zombieEl.style.top = startY + 'px';
@@ -1821,7 +1696,7 @@ function spawnZombie() {
   };
   
   gameState.zombies.push(zombieObj);
-  console.log(`生成${type}僵尸，行:${row}, 血�?${zombieData.hp}`);
+  console.log(`生成${type}僵尸，行:${row}, 血量:${zombieData.hp}`);
 }
 
 function updateZombies() {
@@ -1872,18 +1747,15 @@ function attackPlant(zombie, plant) {
   if (!zombie.lastAttackTime) zombie.lastAttackTime = 0;
   
   if (now - zombie.lastAttackTime >= 1000) {
-    if (!plant || plant.hp <= 0) return; // 防御检�?    
+    if (!plant || plant.hp <= 0) return; // 防御检查
+    
     plant.hp -= zombie.damage;
     zombie.lastAttackTime = now;
-    
-    // 坚果墙受击动�?    if (plant.type === 'wallnut' && plant.element && plant.element.sprite) {
-      plant.element.sprite.play('hurt');
-    }
     
     zombie.element.style.transform = 'scaleX(-1)';
     setTimeout(() => { if (zombie.element) zombie.element.style.transform = ''; }, 200);
     
-    console.log(`僵尸攻击植物！植物剩余血�? ${plant.hp}`);
+    console.log(`僵尸攻击植物！植物剩余血量: ${plant.hp}`);
     
     if (plant.hp <= 0) {
       removePlant(plant.row, plant.col);
@@ -1902,7 +1774,8 @@ function triggerLawnMower(row) {
     mower.style.transition = 'left 3s linear';
     mower.style.left = window.innerWidth + 'px';
     
-    // 小推车消灭该行所有僵�?    setTimeout(() => {
+    // 小推车消灭该行所有僵尸
+    setTimeout(() => {
       gameState.zombies = gameState.zombies.filter(z => {
         if (z.row === row) {
           z.element?.remove();
@@ -1922,23 +1795,26 @@ function triggerLawnMower(row) {
       return true;
     });
     
-    // 动画结束后隐藏小推车（不删除，以便重置时复用�?    setTimeout(() => {
+    // 动画结束后隐藏小推车（不删除，以便重置时复用）
+    setTimeout(() => {
       if (mower.parentNode) {
         mower.style.display = 'none';
       }
     }, 3100);
   } else {
-    // 小推车已被使用，僵尸进入房子�?    gameOver(false);
+    // 小推车已被使用，僵尸进入房子！
+    gameOver(false);
   }
 }
 
 function startZombieSpawner() {
   const levelData = LEVELS[gameState.currentLevel - 1];
-  // 延迟20秒后开始出怪（让玩家先种好植物�?  setTimeout(() => {
-    if (!gameState.isRunning) return;
-    spawnWave();
-  }, 20000);
-  // 不再用setInterval定时出波，改为波次清空后自动触发
+  spawnWave();
+  gameState.zombieSpawnTimer = setInterval(() => {
+    if (gameState.isRunning && !gameState.isPaused && gameState.currentWave <= levelData.waves) {
+      spawnWave();
+    }
+  }, levelData.waveInterval);
 }
 
 function spawnWave() {
@@ -1947,17 +1823,19 @@ function spawnWave() {
   
   if (gameState.currentWave > totalWaves) return;
   
-  // 根据关卡配置计算僵尸数（从第一波递增�?  // 第一波少，后面逐渐�?  let waveZombies = Math.max(1, Math.floor(gameState.currentWave * 0.8 + 1));
+  // 根据关卡配置计算僵尸数
+  let waveZombies = levelData.zombiesPerWave(gameState.currentWave);
   
-  // 最后一波（巨大波次）适度增加
+  // 最后一波（巨大波次）加倍
   if (gameState.currentWave === totalWaves) {
-    waveZombies = Math.floor(waveZombies * 1.3);
-    console.log('>>> 巨大波次来袭�?<<');
+    waveZombies = Math.floor(waveZombies * 1.5);
+    console.log('>>> 巨大波次来袭！<<<');
   }
   
-  console.log(`�?${gameState.currentWave}/${totalWaves} 波来袭！僵尸数量: ${waveZombies}`);
+  console.log(`第 ${gameState.currentWave}/${totalWaves} 波来袭！僵尸数量: ${waveZombies}`);
   
-  // 波次内出怪间�?  const spawnDelay = Math.max(1000, 2000 - gameState.currentWave * 100);
+  // 波次内出怪间隔
+  const spawnDelay = Math.max(800, 2000 - gameState.currentWave * 80);
   
   for (let i = 0; i < waveZombies; i++) {
     setTimeout(() => {
@@ -1965,7 +1843,8 @@ function spawnWave() {
     }, i * spawnDelay);
   }
   
-  // 波次出完后，开始检测僵尸是否清�?  setTimeout(() => {
+  // 检查波次完成
+  setTimeout(() => {
     checkWaveComplete();
   }, waveZombies * spawnDelay + 3000);
 }
@@ -1973,13 +1852,15 @@ function spawnWave() {
 function checkWaveComplete() {
   if (!gameState.isRunning) return;
   if (gameState.isPaused) {
-    // 暂停时不清除timer，等恢复后再检�?    setTimeout(() => checkWaveComplete(), 2000);
+    // 暂停时不检查，2秒后重试
+    setTimeout(() => checkWaveComplete(), 2000);
     return;
   }
   
   const levelData = LEVELS[gameState.currentLevel - 1];
   
-  // 如果没有僵尸了，进入下一�?  if (gameState.zombies.length === 0) {
+  // 如果没有僵尸了，进入下一波
+  if (gameState.zombies.length === 0) {
     gameState.currentWave++;
     
     if (gameState.currentWave > levelData.waves) {
@@ -1987,15 +1868,11 @@ function checkWaveComplete() {
     } else {
       // 给予奖励阳光
       addSun(50);
-      showWaveAnnouncement(`�?${gameState.currentWave}/${levelData.waves} 波`);
-      // 7秒后出下一�?      setTimeout(() => {
-        if (gameState.isRunning && !gameState.isPaused) {
-          spawnWave();
-        }
-      }, 7000);
+      showWaveAnnouncement(`第 ${gameState.currentWave}/${levelData.waves} 波`);
     }
   } else {
-    // 还有僵尸�?秒后再检�?    setTimeout(() => checkWaveComplete(), 2000);
+    // 还有僵尸，稍后再检查
+    setTimeout(() => checkWaveComplete(), 2000);
   }
 }
 
@@ -2028,9 +1905,20 @@ function gameOver(isWin) {
   if (!gameState.isRunning) return;
   gameState.isRunning = false;
   gameState.gameResult = isWin ? 'win' : 'lose';
-  if (typeof onLevelComplete === 'function') onLevelComplete(isWin);
   
-  // 停止定时�?  clearGameTimers();
+  // 停止定时器
+  clearGameTimers();
+  
+  // 上报统计数据
+  if (typeof saveGameResult === 'function' && window.PVZ_USER) {
+    const timeSpent = Date.now() - (window.PVZ_STATS.startTime || Date.now());
+    saveGameResult(
+      gameState.currentLevel, timeSpent,
+      window.PVZ_STATS.plantsUsed || 0,
+      window.PVZ_STATS.plantsDestroyed || 0,
+      gameState.zombiesKilled, isWin
+    );
+  }
   
   const levelData = LEVELS[gameState.currentLevel - 1];
   const isLastLevel = gameState.currentLevel >= LEVELS.length;
@@ -2050,7 +1938,7 @@ function gameOver(isWin) {
   `;
   
   const title = document.createElement('h1');
-  title.textContent = isWin ? (isLastLevel ? '通关�? : '关卡完成�?) : '游戏结束';
+  title.textContent = isWin ? (isLastLevel ? '通关！' : '关卡完成！') : '游戏结束';
   title.style.cssText = `
     font-size: 60px;
     color: ${isWin ? '#ffd700' : '#ff4444'};
@@ -2081,14 +1969,15 @@ function gameOver(isWin) {
   // 下一关按钮（胜利且不是最后一关）
   if (isWin && !isLastLevel) {
     const nextBtn = document.createElement('button');
-    nextBtn.textContent = `下一�?${LEVELS[gameState.currentLevel].name}`;
+    nextBtn.textContent = `下一关 ${LEVELS[gameState.currentLevel].name}`;
     nextBtn.style.cssText = btnStyle + `background: linear-gradient(to bottom, #4CAF50, #2E7D32);`;
     nextBtn.onclick = () => { overlay.remove(); startLevel(gameState.currentLevel + 1); };
     overlay.appendChild(nextBtn);
   }
   
-  // 主菜单按�?  const menuBtn = document.createElement('button');
-  menuBtn.textContent = '返回主菜�?;
+  // 主菜单按钮
+  const menuBtn = document.createElement('button');
+  menuBtn.textContent = '返回主菜单';
   menuBtn.style.cssText = btnStyle + `background: linear-gradient(to bottom, #607D8B, #37474F);`;
   menuBtn.onclick = () => { overlay.remove(); showMainMenu(); };
   overlay.appendChild(menuBtn);
@@ -2106,7 +1995,8 @@ function clearGameTimers() {
 function resetGame() {
   clearGameTimers();
   
-  // 清理所有游戏对�?  gameState.zombies.forEach(z => z.element?.remove());
+  // 清理所有游戏对象
+  gameState.zombies.forEach(z => z.element?.remove());
   gameState.plants.forEach(p => p.element?.remove());
   gameState.suns.forEach(s => s.element?.remove());
   gameState.bullets.forEach(b => b.element?.remove());
@@ -2117,7 +2007,8 @@ function resetGame() {
   // 清理阳光容器
   if (elements.fallingSuns) elements.fallingSuns.innerHTML = '';
   
-  // 重置状�?  gameState.zombies = [];
+  // 重置状态
+  gameState.zombies = [];
   gameState.plants = [];
   gameState.suns = [];
   gameState.bullets = [];
@@ -2130,7 +2021,8 @@ function resetGame() {
   gameState.isPaused = false;
   gameState.mowerUsed = [false, false, false, false, false];
   
-  // 重置小推�?  document.querySelectorAll('.lawn-mower').forEach(mower => {
+  // 重置小推车
+  document.querySelectorAll('.lawn-mower').forEach(mower => {
     mower.classList.remove('active');
     mower.style.display = '';
     mower.style.left = '';
@@ -2138,37 +2030,10 @@ function resetGame() {
   });
 }
 
-
-
-// ========== 小推车定位系�?==========
-function updateLawnMowers() {
-  const levelNum = gameState.currentLevel || 1;
-  const activeRows = getActiveRows(levelNum);
-  const lawnRect = elements.lawn.getBoundingClientRect();
-  
-  document.querySelectorAll('.lawn-mower').forEach(mower => {
-    const rowNum = parseInt(mower.dataset.row);
-    
-    if (!activeRows.includes(rowNum)) {
-      mower.style.display = 'none';
-      return;
-    }
-    
-    // 显示并重定位到对应行的实际位�?    const rowEl = document.querySelector(`.row[data-row="${rowNum}"]`);
-    if (rowEl) {
-      const rowRect = rowEl.getBoundingClientRect();
-      const newTop = rowRect.top + (rowRect.height - 35) / 2;
-      mower.style.top = newTop + 'px';
-    }
-    mower.style.display = '';
-  });
-}
-
 // ========== 关卡启动 ==========
 
 function startLevel(levelNum) {
   resetGame();
-  if (typeof startGameStats === 'function') startGameStats(levelNum);
   
   gameState.currentLevel = levelNum;
   const levelData = LEVELS[levelNum - 1];
@@ -2179,12 +2044,14 @@ function startLevel(levelNum) {
   // 显示/隐藏植物卡片
   updatePlantCards(levelData.plants);
   
-  // 显示/隐藏行（关卡递增草坪�?  const activeRows = getActiveRows(levelNum);
+  // 显示/隐藏行（关卡递增草坪）
+  const activeRows = getActiveRows(levelNum);
   document.querySelectorAll('.row').forEach(row => {
     const rowNum = parseInt(row.dataset.row);
     row.style.display = activeRows.includes(rowNum) ? '' : 'none';
   });
-  // 显示/隐藏小推�?+ 动态重定位（等DOM reflow后根据行位置计算�?  requestAnimationFrame(() => {
+  // 显示/隐藏小推车 + 动态重定位（等DOM reflow后根据行位置计算）
+  requestAnimationFrame(() => {
     const lawnEl = document.getElementById('lawn');
     const lawnRect = lawnEl.getBoundingClientRect();
     document.querySelectorAll('.lawn-mower').forEach(mower => {
@@ -2205,18 +2072,21 @@ function startLevel(levelNum) {
     });
   });
 
-  // 移除覆盖�?  const existingOverlay = document.getElementById('game-over-overlay');
+  // 移除覆盖层
+  const existingOverlay = document.getElementById('game-over-overlay');
   if (existingOverlay) existingOverlay.remove();
   document.querySelectorAll('.wave-announcement').forEach(el => el.remove());
   
-  // 初始化网�?  for (let r = 0; r < CONFIG.ROWS; r++) {
+  // 初始化网格
+  for (let r = 0; r < CONFIG.ROWS; r++) {
     gameState.grid[r] = [];
     for (let c = 0; c < CONFIG.COLS; c++) {
       gameState.grid[r][c] = null;
     }
   }
   
-  // 重置选中状�?  gameState.selectedPlant = null;
+  // 重置选中状态
+  gameState.selectedPlant = null;
   gameState.shovelMode = false;
   elements.plantCards.forEach(c => c.classList.remove('selected'));
   elements.shovelBtn.classList.remove('selected');
@@ -2244,7 +2114,8 @@ function startLevel(levelNum) {
     }
   }, 1000);
   
-  // 延迟启动（给玩家准备时间�?  setTimeout(() => {
+  // 延迟启动（给玩家准备时间）
+  setTimeout(() => {
     startSunDropTimer(levelData.sunInterval);
     startZombieSpawner();
     gameLoop();
@@ -2302,13 +2173,13 @@ function togglePause() {
       overlay.appendChild(resumeBtn);
       
       const restartBtn = document.createElement('button');
-      restartBtn.textContent = '重新开�?;
+      restartBtn.textContent = '重新开始';
       restartBtn.style.cssText = btnStyle + `background: linear-gradient(to bottom, #FF9800, #E65100);`;
       restartBtn.onclick = () => { overlay.remove(); startLevel(gameState.currentLevel); };
       overlay.appendChild(restartBtn);
       
       const menuBtn = document.createElement('button');
-      menuBtn.textContent = '返回主菜�?;
+      menuBtn.textContent = '返回主菜单';
       menuBtn.style.cssText = btnStyle + `background: linear-gradient(to bottom, #607D8B, #37474F);`;
       menuBtn.onclick = () => { overlay.remove(); showMainMenu(); };
       overlay.appendChild(menuBtn);
@@ -2319,12 +2190,10 @@ function togglePause() {
     // 取消暂停
     if (pauseOverlay) pauseOverlay.remove();
     gameLoop();
-    // 暂停期间可能所有僵尸已死，恢复后补检波次
-    checkWaveComplete();
   }
 }
 
-// ========== 主菜�?==========
+// ========== 主菜单 ==========
 
 function showMainMenu() {
   // 停止当前游戏
@@ -2336,7 +2205,8 @@ function showMainMenu() {
   document.getElementById('top-bar').style.display = 'none';
   document.getElementById('game-area').style.display = 'none';
   
-  // 移除旧菜�?  const old = document.getElementById('main-menu');
+  // 移除旧菜单
+  const old = document.getElementById('main-menu');
   if (old) old.remove();
   
   const menu = document.createElement('div');
@@ -2362,7 +2232,7 @@ function showMainMenu() {
   
   const subtitle = document.createElement('div');
   subtitle.style.cssText = `font-size: 18px; color: #8BC34A; margin-bottom: 40px; letter-spacing: 2px;`;
-  subtitle.textContent = '网页�?;
+  subtitle.textContent = '网页版';
   menu.appendChild(subtitle);
   
   // 关卡选择
@@ -2386,20 +2256,13 @@ function showMainMenu() {
     `;
     btn.innerHTML = `
       <div style="font-size:16px;font-weight:bold">${level.name}</div>
-      <div style="font-size:11px;margin-top:2px">${unlocked ? level.desc : '未解�?}</div>
+      <div style="font-size:11px;margin-top:2px">${unlocked ? level.desc : '未解锁'}</div>
       ${!unlocked ? '<div style="font-size:16px;margin-top:2px">🔒</div>' : ''}
     `;
     if (unlocked) {
       btn.onmouseenter = () => btn.style.transform = 'scale(1.05)';
       btn.onmouseleave = () => btn.style.transform = 'scale(1)';
-      const levelNum = i + 1;
-      btn.onclick = () => {
-        if (typeof requireLogin === 'function' && window.TCB_READY) {
-          requireLogin(() => { menu.remove(); showGameUI(); startLevel(levelNum); });
-        } else {
-          menu.remove(); showGameUI(); startLevel(levelNum);
-        }
-      };
+      btn.onclick = () => { menu.remove(); showGameUI(); startLevel(i + 1); };
     }
     levelGrid.appendChild(btn);
   });
@@ -2408,7 +2271,7 @@ function showMainMenu() {
   
   // 连续冒险按钮
   const adventureBtn = document.createElement('button');
-  adventureBtn.textContent = '冒险模式（从�?关开始）';
+  adventureBtn.textContent = '冒险模式（从第1关开始）';
   adventureBtn.style.cssText = `
     font-size: 22px; padding: 14px 40px;
     background: linear-gradient(to bottom, #4CAF50, #2E7D32);
@@ -2417,13 +2280,7 @@ function showMainMenu() {
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     margin-top: 10px;
   `;
-  adventureBtn.onclick = () => {
-    if (typeof requireLogin === 'function' && window.TCB_READY) {
-      requireLogin(() => { menu.remove(); showGameUI(); startLevel(1); });
-    } else {
-      menu.remove(); showGameUI(); startLevel(1);
-    }
-  };
+  adventureBtn.onclick = () => { menu.remove(); showGameUI(); startLevel(1); };
   menu.appendChild(adventureBtn);
   
   // 查看图鉴按钮
@@ -2440,20 +2297,22 @@ function showMainMenu() {
   almanacBtn.onclick = () => { menu.remove(); showAlmanac(); };
   menu.appendChild(almanacBtn);
   
-  // 一键解锁全部关卡按�?  const unlockAllBtn = document.createElement('button');
-  unlockAllBtn.textContent = '一键解锁全部关�?;
+  // 一键解锁全部关卡按钮
+  const unlockAllBtn = document.createElement('button');
+  unlockAllBtn.textContent = '🔓 一键解锁全部关卡';
   unlockAllBtn.style.cssText = `
-    font-size: 18px; padding: 10px 30px;
-    background: linear-gradient(to bottom, #FF9800, #F57C00);
-    color: white; border: 3px solid #E65100;
-    border-radius: 12px; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    margin-top: 15px;
+    font-size: 16px; padding: 10px 30px;
+    background: linear-gradient(to bottom, #FF9800, #E65100);
+    color: white; border: 2px solid #BF360C;
+    border-radius: 10px; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    margin-top: 10px;
   `;
   unlockAllBtn.onclick = () => {
     gameState.maxUnlockedLevel = LEVELS.length;
     menu.remove();
-    showMainMenu(); // 刷新菜单显示解锁状�?  };
+    showMainMenu();
+  };
   menu.appendChild(unlockAllBtn);
   
   document.body.appendChild(menu);
@@ -2464,7 +2323,7 @@ function showGameUI() {
   document.getElementById('game-area').style.display = 'block';
 }
 
-// ========== 游戏初始�?==========
+// ========== 游戏初始化 ==========
 
 function initGame() {
   // 获取DOM元素（只执行一次）
@@ -2476,7 +2335,8 @@ function initGame() {
     fallingSuns: document.getElementById('falling-suns')
   };
   
-  // 添加暂停按钮到顶�?  let pauseBtn = document.getElementById('pause-btn');
+  // 添加暂停按钮到顶栏
+  let pauseBtn = document.getElementById('pause-btn');
   if (!pauseBtn) {
     pauseBtn = document.createElement('button');
     pauseBtn.id = 'pause-btn';
@@ -2521,20 +2381,7 @@ function initGame() {
   
   console.log('游戏初始化完成，事件监听器已绑定');
   
-  // 显示主菜�?  // 如果 Firebase 已配置且用户已登录，显示用户信息
-  if (window.TCB_READY && window.PVZ_USER) {
-    const nameEl = document.getElementById('user-name');
-    if (nameEl && window.PVZ_USER.displayName) nameEl.textContent = '👤 ' + window.PVZ_USER.displayName;
-    const ub = document.getElementById('user-bar');
-    if (ub) ub.style.display = 'flex';
-  }
-  // 如果 Firebase 已配置但用户未登录，显示登录界面
-  if (window.TCB_READY && !window.PVZ_USER) {
-    const authScreen = document.getElementById('auth-screen');
-    if (authScreen) authScreen.style.display = 'flex';
-    console.log('[PVZ] TCB已就绪，等待登录...');
-    return;
-    // 继续显示主菜单（在登录界面下方，但被遮盖�?  }
+  // 显示主菜单
   showMainMenu();
 }
 
@@ -2552,7 +2399,8 @@ function showAlmanac() {
   // 默认显示植物图鉴
   renderAlmanacPlants();
   
-  // 绑定标签页切换事�?  document.querySelectorAll('.almanac-tab').forEach(tab => {
+  // 绑定标签页切换事件
+  document.querySelectorAll('.almanac-tab').forEach(tab => {
     tab.onclick = () => {
       document.querySelectorAll('.almanac-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
@@ -2598,7 +2446,7 @@ function renderAlmanacPlants() {
         <div class="almanac-card-name">${plant.name}</div>
         <div class="almanac-card-stats">
           <span class="almanac-stat">价格: <span class="almanac-stat-value">${plant.cost}</span></span>
-          <span class="almanac-stat">血�? <span class="almanac-stat-value">${plant.hp}</span></span>
+          <span class="almanac-stat">血量: <span class="almanac-stat-value">${plant.hp}</span></span>
           <span class="almanac-stat">伤害: <span class="almanac-stat-value">${plant.damage}</span></span>
           <span class="almanac-stat">冷却: <span class="almanac-stat-value">${plant.cooldown}</span></span>
         </div>
@@ -2624,7 +2472,7 @@ function renderAlmanacZombies() {
       <div class="almanac-card-info">
         <div class="almanac-card-name">${zombie.name}</div>
         <div class="almanac-card-stats">
-          <span class="almanac-stat">血�? <span class="almanac-stat-value">${zombie.hp}</span></span>
+          <span class="almanac-stat">血量: <span class="almanac-stat-value">${zombie.hp}</span></span>
           <span class="almanac-stat">伤害: <span class="almanac-stat-value">${zombie.damage}</span></span>
           <span class="almanac-stat">速度: <span class="almanac-stat-value">${zombie.speed}</span></span>
         </div>

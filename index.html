@@ -5,54 +5,14 @@
   <meta name="viewport" content="width=900">
   <title>植物大战僵尸 - 网页版</title>
   <link rel="stylesheet" href="style.css">
-  <!-- CloudBase REST API 配置（无需 SDK） -->
+  <!-- CloudBase 云函数配置 -->
   <script src="tcb-config.js"></script>
-  <script src="tcb-auth.js"></script>
 </head>
 <body>
 
-<!-- 登录/注册界面 -->
-<div id="auth-screen" style="display:none">
-  <div id="auth-box">
-    <h1>🌻 植物大战僵尸</h1>
-    <div id="auth-tabs">
-      <button class="auth-tab active" data-tab="login">登录</button>
-      <button class="auth-tab" data-tab="register">注册</button>
-    </div>
-    <div id="auth-form-login">
-      <input type="email" id="login-email" placeholder="邮箱" />
-      <input type="password" id="login-password" placeholder="密码" />
-      <button id="btn-login">登录</button>
-    </div>
-    <div id="auth-form-register" style="display:none">
-      <input type="text" id="reg-username" placeholder="用户名（排行榜显示）" />
-      <input type="email" id="reg-email" placeholder="邮箱" />
-      <input type="password" id="reg-password" placeholder="密码（至少6位）" />
-      <button id="btn-register">注册</button>
-    </div>
-    <p id="auth-error" style="color:red;display:none"></p>
-    <p id="auth-info" style="color:#888;font-size:12px;text-align:center;margin-top:10px;">
-      首次使用请先注册账号。
-    </p>
-  </div>
-</div>
+<!-- 登录/注册界面（由 tcb-auth.js 动态创建） -->
 
-<!-- 登录后顶部用户栏 -->
-  <div id="user-bar" style="display:none">
-    <span id="user-name"></span>
-    <span id="user-score" style="margin-left:15px">得分: <span id="current-score">0</span></span>
-    <button id="btn-leaderboard" style="margin-left:15px;padding:2px 10px;cursor:pointer;">🏆 排行榜</button>
-    <button id="btn-logout" style="margin-left:10px;padding:2px 10px;cursor:pointer;">退出</button>
-  </div>
-
-  <!-- 排行榜界面 -->
-  <div id="leaderboard-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:10000;align-items:center;justify-content:center;">
-    <div id="leaderboard-panel" style="background:#2d5016;color:#fff;padding:20px;border-radius:10px;min-width:400px;max-width:500px;">
-      <h2 style="text-align:center;margin-bottom:15px;">🏆 排行榜</h2>
-      <div id="leaderboard-list" style="max-height:400px;overflow-y:auto;"></div>
-      <button id="leaderboard-close" style="display:block;margin:15px auto 0;padding:5px 20px;cursor:pointer;">关闭</button>
-    </div>
-  </div>
+<!-- 用户栏和排行榜（由 tcb-auth.js 动态管理） -->
 
   <!-- 顶部UI栏 -->
   <div id="top-bar">
@@ -220,6 +180,7 @@
     </div>
   </div>
 
+  <script src="tcb-auth.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
