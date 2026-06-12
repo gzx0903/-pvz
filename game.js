@@ -709,6 +709,23 @@ function renderPlant(row, col, plantType) {
   cell.appendChild(plant);
   cell.classList.add('occupied');
   
+  // 植物CSS动画类映射
+  const plantAnimMap = {
+    'sunflower': 'sun-idle-bob',
+    'peashooter': 'pea-idle-bob',
+    'snowpea': 'snowpea-idle-bob',
+    'wallnut': 'wallnut-idle-bob',
+    'potatomine': 'potato-idle-wobble',
+    'cherrybomb': 'cherry-idle-pulse',
+    'jalapeno': 'jalapeno-idle-glow',
+    'chomper': 'chomper-idle-breathe',
+    'repeater': 'repeater-idle-bob'
+  };
+  const animClass = plantAnimMap[plantType];
+  if (animClass) {
+    plant.classList.add('plant-animated', animClass);
+  }
+  
   // 添加到游戏状态
   const plantObj = {
     type: plantType,
@@ -1187,6 +1204,24 @@ function shootPea(plant) {
   const cell = document.querySelector(`.cell[data-row="${plant.row}"][data-col="${plant.col}"]`);
   if (!cell || !plant.element) return;
   
+  // 攻击动画：临时切换为attack类，结束后恢复idle
+  const attackAnimMap = {
+    'peashooter': { attack: 'pea-attack-shake', idle: 'pea-idle-bob' },
+    'snowpea': { attack: 'snowpea-attack-shake', idle: 'snowpea-idle-bob' },
+    'repeater': { attack: 'repeater-attack-shake', idle: 'repeater-idle-bob' }
+  };
+  const anim = attackAnimMap[plant.type];
+  if (anim && plant.element) {
+    plant.element.classList.remove(anim.idle, anim.attack);
+    plant.element.classList.add(anim.attack);
+    setTimeout(() => {
+      if (plant.element) {
+        plant.element.classList.remove(anim.attack);
+        plant.element.classList.add(anim.idle);
+      }
+    }, 400);
+  }
+  
   const cellRect = cell.getBoundingClientRect();
   const rowEl = document.querySelector(`.row[data-row="${plant.row}"]`);
   if (!rowEl) return;
@@ -1290,6 +1325,7 @@ function hitZombie(zombie, damage, isSnowpea) {
   
   if (zombie.hp <= 0) {
     if (zombie.element) zombie.element.remove();
+    gameState.zombiesKilled++;
     gameState.zombies = gameState.zombies.filter(z => z.id !== zombie.id);
     console.log('僵尸被击杀！');
   }
@@ -1331,6 +1367,7 @@ function detonateCherryBomb(plant) {
           zombie.hp -= 1800;
           if (zombie.hp <= 0 && zombie.element) {
             zombie.element.remove();
+            gameState.zombiesKilled++;
           }
         }
       });
