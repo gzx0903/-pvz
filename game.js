@@ -640,6 +640,12 @@ function initLawn() {
       
       // 种植模式：放置植物
       if (gameState.selectedPlant) {
+        // 检查冷却
+        if (isPlantOnCooldown(gameState.selectedPlant)) {
+          const remaining = getPlantCooldown(gameState.selectedPlant) - (Date.now() - (lastPlacedTime[gameState.selectedPlant] || 0));
+          console.log(`冷却中！还需 ${Math.ceil(remaining / 1000)} 秒`);
+          return;
+        }
         if (isCellEmpty(row, col)) {
           const cost = CONFIG.PLANT_COST[gameState.selectedPlant];
           console.log('花费阳光:', cost, '当前阳光:', gameState.sun);
